@@ -92,3 +92,131 @@ Implementar esta estrategia de indexación, balanceando el costo y el beneficio,
 * **Calendarios (RF#1, RF#9):** La carga de calendarios y reportes diarios será instantánea gracias al índice agrupado estratégico.
 * **Gestión (RF#5):** Los paneles de administrador (como pagos pendientes) serán ágiles y no sobrecargarán la base de datos, gracias a los índices filtrados.
 * **Experiencia de Usuario:** Un sistema rápido (logins, ver "mis reservas") es un sistema que los usuarios querrán usar.
+
+  ---
+
+  # Optimización de Consultas con Índices en "TurnosYA"
+
+## 1. Introducción
+
+En sistemas que manejan grandes volúmenes de información, como el proyecto **TurnosYA**, la optimización del rendimiento de las consultas SQL es fundamental. Cada vez que un jugador realiza una reserva, un canchero consulta los turnos del día o el sistema valida la disponibilidad, SQL Server ejecuta consultas sobre las tablas principales del sistema.
+
+Si la base de datos crece hasta contener millones de reservas históricas, una consulta mal optimizada puede generar:
+
+* Tiempos de espera excesivos.
+* Sobrecarga en CPU.
+* Bloqueos durante horas de alta concurrencia.
+* Pérdida de escalabilidad del sistema.
+
+Una de las técnicas más importantes para mejorar el rendimiento es el uso adecuado de **índices**, estructuras internas que aceleran el acceso a los datos evitando escaneos completos de tabla.
+
+Esta investigación aplica los conceptos teóricos de los índices a las necesidades reales del proyecto TurnosYA, basado en su diseño y funcionalidades clave.
+
+---
+
+## 2. ¿Qué es un índice en SQL Server?
+
+Un índice es una estructura auxiliar, generalmente implementada como un **árbol B+**, que SQL Server utiliza para localizar rápidamente las filas de una tabla sin tener que recorrerla completa.
+
+### Beneficios principales
+* Acelera consultas `SELECT`.
+* Mejora filtros en `WHERE` y `JOIN`.
+* Reduce el tiempo de ordenamientos y agrupamientos.
+* Disminuye la carga del sistema al evitar *table scans*.
+
+### Desventajas
+* Ocupan espacio adicional.
+* Ralentizan operaciones `INSERT`, `UPDATE` y `DELETE`.
+* Aplicados en exceso pueden perjudicar el rendimiento general.
+
+---
+
+## 3. Relación entre índices y el modelo "TurnosYA"
+
+El diseño del proyecto TurnosYA incluye tablas como `reserva`, `cancha`, `jugador`, `usuario`, `estado` y `metodo_pago`. La tabla `reserva` es la más crítica del sistema porque concentra el mayor volumen de datos y se utiliza en casi todas las operaciones principales.
+
+**Consultas frecuentes del sistema:**
+
+* **Validar disponibilidad:** `fecha`, `hora`, `id_cancha`
+* **Consultar historial del jugador:** `id_jugador`
+* **Ver turnos del día:** `fecha`
+* **Generar reportes:** `JOIN` entre `reserva`, `cancha`, `jugador` y `estado`
+
+---
+
+## 4. Índices Recomendados (y Automáticos) en tu Schema
+
+### 4.1 Índices Automáticos (¡Buenas noticias!)
+
+Tu script `.sql` ya crea inteligentemente varios índices esenciales para cumplir con las restricciones `UNIQUE`:
+
+1.  **`UQ_reserva_momento` en `reserva (fecha, hora, id_cancha)`**
+    * **Efecto:** SQL Server crea automáticamente un **Índice Único No Agrupado** sobre estas tres columnas. Esto significa que la consulta más crítica de tu sistema (validar disponibilidad, `RF#8`) ya está **altamente optimizada** desde el diseño.
+
+2.  **`UQ_usuario_email` y `UQ_usuario_dni` en `usuario`**
+    * **Efecto:** Los inicios de sesión (`WHERE email = @email`) y las búsquedas de usuarios por DNI serán instantáneas, incluso con millones de usuarios.
+
+3.  **Restricciones `UNIQUE` en tablas maestras**
+    * (`UQ_roles_nombre`, `UQ_metodo_pago_desc`, etc.) También crean índices, asegurando búsquedas rápidas en los catálogos.
+
+### 4.2 Índices Adicionales Sugeridos
+
+Aunque tu schema es fuerte, estas adiciones estratégicas cubrirán otras consultas frecuentes:
+
+**1. Tabla `reserva` (Historial del Jugador)**
+* **Consulta:** `SELECT * FROM reserva WHERE id_jugador = @id_jugador`
+* **Índice:**
+    ```sql
+    CREATE NONCLUSTERED INDEX IX_reserva_jugador
+    ON reserva (id_jugador);
+    ```
+* **Beneficio:** Permite a un jugador ver "Mis Reservas" instantáneamente, sin escanear los millones de reservas de la tabla.
+
+**2. Tabla `reserva` (Reportes de Estado)**
+* **Consulta:** `SELECT * FROM reserva WHERE id_estado = @id_estado`
+* **Índice:**
+    ```sql
+    CREATE NONCLUSTERED INDEX IX_reserva_estado
+    ON reserva (id_estado);
+    ```
+* **Beneficio:** Acelera los reportes del "Canchero", como ver todas las reservas "Pendientes" o "Confirmadas".
+
+**3. Tabla `usuario` (Filtrar por Rol)**
+* **Consulta:** `SELECT * FROM usuario WHERE id_rol = @id_rol`
+* **Índice:**
+    ```sql
+    CREATE NONCLUSTERED INDEX IX_usuario_rol
+    ON usuario (id_rol);
+    ```
+* **Beneficio:** Útil si el administrador necesita, por ejemplo, "ver a todos los jugadores" (rol=3).
+
+**4. Tabla `cancha` (Filtrar por Tipo)**
+* **Consulta:** `SELECT * FROM cancha WHERE id_tipo = @id_tipo`
+* **Índice:**
+    ```sql
+    CREATE NONCLUSTERED INDEX IX_cancha_tipo
+    ON cancha (id_tipo);
+    ```
+* **Beneficio:** Ayuda a la UI a filtrar canchas por tipo (ej. "mostrar solo Pádel").
+
+---
+
+## 5. Resumen de Índices Definitivos para "TurnosYA"
+
+| Tabla | Índice | Objetivo | Tipo |
+| :--- | :--- | :--- | :--- |
+| **reserva** | `(fecha, hora, id_cancha)` | Optimizar disponibilidad | **Automático (por UQ)** |
+| **usuario** | `(email)` | Login rápido | **Automático (por UQ)** |
+| **usuario** | `(dni)` | Búsqueda DNI rápida | **Automático (por UQ)** |
+| **reserva** | `(id_jugador)` | Historial del jugador | **Sugerido** |
+| **reserva** | `(id_estado)` | Reportes de estado | **Sugerido** |
+| **usuario** | `(id_rol)` | Filtrar perfiles | **Sugerido** |
+| **cancha** | `(id_tipo)` | Filtrar tipos de cancha | **Sugerido** |
+
+---
+
+## 6. Conclusión
+
+La implementación correcta de índices en SQL Server es esencial para asegurar el rendimiento del sistema TurnosYA. **Gracias a un diseño de schema robusto que incluye restricciones `UNIQUE` clave, las operaciones más críticas como la validación de disponibilidad ya están optimizadas.**
+
+Añadiendo los índices sugeridos sobre las claves foráneas (`id_jugador`, `id_estado`), el sistema estará preparado para escalar sin perder velocidad, incluso con millones de registros.
