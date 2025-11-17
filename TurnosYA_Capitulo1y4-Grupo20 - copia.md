@@ -24,9 +24,8 @@
     * [3.3 Requisitos Funcionales (RF) Relevantes para la BD](#33-requisitos-funcionales-rf-relevantes-para-la-bd)
     * [3.4 Herramientas Utilizadas](#34-herramientas-utilizadas)
 * [CAPÍTULO IV: DESARROLLO DEL TEMA / PRESENTACIÓN DE RESULTADOS](#cap%C3%ADtulo-iv-desarrollo-del-tema--presentaci%C3%B3n-de-resultados)
-    * [4.1 Diagrama de Entidad-Relación (DER)](#41-diagrama-de-entidad-relaci%C3%B3n-der)
-    * [4.2 Diagrama Relacional](#42-diagrama-relacional)
-    * [4.3 Diccionario de Datos](#43-diccionario-de-datos)
+    * [4.1 Diagrama Relacional](#41-diagrama-relacional)
+    * [4.2 Diccionario de Datos](#42-diccionario-de-datos)
 * [CAPÍTULO V: CONCLUSIONES](#cap%C3%ADtulo-v-conclusiones)
 * [CAPÍTULO VI: BIBLIOGRAFÍA](#cap%C3%ADtulo-vi-bibliograf%C3%ADa)
 
@@ -66,12 +65,12 @@ Como se mencionó en el caso de estudio, existe una amplia gama de aplicaciones 
 
 ### 2.2 Conceptos Teóricos de Bases de Datos
 
-El desarrollo de este proyecto, como requisito de la asignatura, debe involucrar los conceptos teóricos de los motores de bases de datos aplicados a un caso práctico. Los pilares conceptuales de este trabajo son:
+El desarrollo de este proyecto se basa en los conceptos teóricos de los motores de bases de datos relacionales. Los pilares conceptuales de este trabajo son:
 
-* **Modelo Entidad-Relación (MER):** Es una herramienta para el modelado de datos que permite representar las entidades relevantes de un sistema de información (como `Jugador`, `Cancha`, `Reserva`) y las relaciones entre ellas.
-* **Modelo Relacional:** Es el modelo de base de datos en el que se basa el diseño. Consiste en representar los datos en tablas (relaciones) compuestas por filas (tuplas) y columnas (atributos). Este modelo garantiza la integridad y consistencia de los datos mediante el uso de claves primarias (PK) y claves foráneas (FK).
-* **Sistema Gestor de Base de Datos (SGBD):** Es el software que permite definir, construir y manipular la base de datos, proporcionando mecanismos de control de acceso, concurrencia y recuperación de fallos.
-* **SQL (Structured Query Language):** Es el lenguaje estándar utilizado para gestionar y consultar bases de datos relacionales.
+* **Modelo Relacional:** Es el modelo de base de datos en el que se basa el diseño. Consiste en representar los datos en tablas (relaciones) compuestas por filas (tuplas) y columnas (atributos).
+* **Integridad Referencial:** Se garantiza mediante el uso de Claves Primarias (PK) y Claves Foráneas (FK), asegurando que las relaciones entre tablas sean consistentes. Por ejemplo, una `reserva` no puede existir sin un `usuario` y una `cancha` válidos.
+* **Normalización:** El diseño separa entidades en distintas tablas (como `usuario`, `roles`, `cancha`, `tipo_cancha`) para evitar la redundancia de datos y mejorar la consistencia.
+* **Control de Acceso Basado en Roles (RBAC):** Aunque la lógica de permisos reside en la aplicación, la base de datos soporta este modelo al centralizar a todos los agentes en una tabla `usuario` y asignarles permisos a través de una tabla `roles`. Esto permite que un "Administrador" tenga permisos sobre reservas que no le pertenecen.
 
 ---
 
@@ -83,10 +82,10 @@ En este capítulo se presenta el plan seguido y las acciones llevadas a cabo par
 
 El desarrollo del proyecto de base de datos se estructuró en las siguientes fases:
 
-1.  **Educción de Requisitos:** Se investigaron las necesidades y problemas de los usuarios clave.
-2.  **Especificación de Requisitos:** Se documentaron los requisitos funcionales y no funcionales que la base de datos debe soportar.
-3.  **Diseño Conceptual y Lógico:** Se creó el Diagrama Entidad-Relación y el Diagrama Relacional.
-4.  **Implementación:** Se generó el Diccionario de Datos como paso previo a la creación de los *scripts* SQL para la implementación física.
+1.  **Educción de Requisitos:** Se investigaron las necesidades y problemas de los usuarios clave (jugadores y cancheros).
+2.  **Especificación de Requisitos:** Se documentaron los requisitos funcionales que la base de datos debe soportar.
+3.  **Diseño Conceptual y Lógico:** Se creó el Diagrama Relacional para modelar la estructura de los datos y sus relaciones.
+4.  **Implementación (Diseño Físico):** Se generó el Diccionario de Datos como paso previo a la creación de los *scripts* SQL para la implementación física.
 
 ### 3.2 Método de Educción de Requisitos
 
@@ -95,7 +94,7 @@ Para obtener los datos sobre las necesidades del sistema, se empleó la técnica
 * **Jugadores** (usuarios finales de las reservas).
 * **Cancheros** (administradores del sistema).
 
-Esta técnica permitió obtener información precisa sobre los problemas de la gestión manual. Se incluyeron preguntas abiertas, cerradas y bipolares.
+Esta técnica permitió obtener información precisa sobre los problemas de la gestión manual.
 
 #### 3.2.1 Preguntas a jugadores
 * ¿Con qué frecuencia reservas una cancha?
@@ -105,7 +104,6 @@ Esta técnica permitió obtener información precisa sobre los problemas de la g
 #### 3.2.2 Preguntas a cancheros
 * ¿Cómo gestionan actualmente los turnos?
 * ¿Qué problemas surgen en la administración diaria?
-* ¿Necesitás ver reportes o estadísticas?
 * ¿Te interesaría agregar reservas manuales?
 
 ### 3.3 Requisitos Funcionales (RF) Relevantes para la BD
@@ -114,102 +112,131 @@ A partir de la educción, se definieron los requisitos funcionales que la base d
 
 | $N^{\circ}$ | Descripción |
 | :--- | :--- |
-| **RF#1** | El sistema deberá permitir a los jugadores visualizar un calendario de turnos. |
+| **RF#1** | El sistema deberá permitir a los usuarios (con rol "Jugador") visualizar un calendario de turnos. |
 | **RF#2** | El sistema deberá permitir seleccionar cancha, fecha y horario entre los disponibles. |
-| **RF#3** | El sistema deberá registrar reservas con confirmación automática. |
-| **RF#4** | El sistema deberá permitir al canchero modificar, cancelar o agregar reservas manualmente. |
+| **RF#3** | El sistema deberá registrar reservas asociadas a un usuario. |
+| **RF#4** | El sistema deberá permitir a un usuario (con rol "Canchero" o "Administrador") modificar, cancelar o agregar reservas manualmente. |
 | **RF#5** | El sistema deberá mostrar el estado de pago de cada reserva. |
 | **RF#6** | El sistema deberá permitir al jugador elegir el método de pago. |
 | **RF#8** | El sistema deberá validar conflictos de horarios antes de confirmar reservas. |
-| **RF#9** | El sistema deberá mostrar un resumen diario de reservas al canchero. |
 
 ### 3.4 Herramientas Utilizadas
 
-Para la gestión y diseño del proyecto se utilizaron las siguientes herramientas:
-
-* **Herramientas de modelado de datos:** Se utilizaron herramientas gráficas para la creación del Diagrama Entidad-Relación y el Diagrama Relacional.
-* **Trello:** Para la organización de tareas y seguimiento del proyecto.
-* **Procesadores de texto y hojas de cálculo:** Para la elaboración del Diccionario de Datos y la documentación del informe.
+* **Herramientas de modelado de datos:** Para la creación del Diagrama Relacional.
+* **Procesadores de texto:** Para la elaboración de este informe y el Diccionario de Datos.
 
 ---
 
 ## CAPÍTULO IV: DESARROLLO DEL TEMA / PRESENTACIÓN DE RESULTADOS
 
-Este capítulo presenta los hallazgos y el diseño propuesto para responder a los objetivos planteados.
+Este capítulo presenta el diseño propuesto para la base de datos, respondiendo a los objetivos planteados.
 
-### 4.1 Diagrama de Entidad-Relación (DER)
+### 4.1 Diagrama Relacional
 
-El primer resultado del modelado es el DER, que identifica las entidades principales y sus relaciones.
+El siguiente diagrama representa la estructura lógica de la base de datos "TurnosYA", incluyendo todas las entidades, sus atributos y las relaciones entre ellas.
 
-[cite_start]*(Aquí deberías insertar la imagen de tu Diagrama Entidad-Relación, que está en el PDF de Ingeniería I, página 23 [cite: 461, 462, 463, 490, 493])*
+*(Aquí debes insertar la imagen que me pasaste: `WhatsApp Image 2025-11-16 at 21.41.33.jpeg`)*
 
-**
+![Diagrama Relacional Actualizado](https://i.imgur.com/8Qn7mR7.png) 
+*(Nota: Puse una imagen de marcador de posición. ¡Reemplaza el enlace de arriba con la ruta a tu imagen!)*
 
-### 4.2 Diagrama Relacional
+### 4.2 Diccionario de Datos
 
-A partir del DER, se obtiene el modelo relacional, que representa la estructura de las tablas de la base de datos.
+Define en detalle la estructura, tipo de datos y restricciones de cada tabla en el modelo relacional.
 
-![diagrama_relacional](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/TurnosYA_relacional.png)
+---
+**Tabla: `roles`**
+* **Descripción:** Almacena los tipos de perfiles de usuario (Ej: Administrador, Canchero, Jugador).
+| Campo | Tipo | Restricciones | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_rol** | INT | **PK** | Identificador único del rol. |
+| nombre_rol | VARCHAR | NOT NULL | Nombre descriptivo del rol. |
 
-### 4.3 Diccionario de Datos
+---
+**Tabla: `usuario`**
+* **Descripción:** Almacena los datos de todas las personas que interactúan con el sistema.
+| Campo | Tipo | Restricciones | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_usuario** | INT | **PK** | Identificador único del usuario. |
+| nombre | VARCHAR | NOT NULL | Nombre del usuario. |
+| apellido | VARCHAR | NOT NULL | Apellido del usuario. |
+| email | VARCHAR | UNIQUE, NOT NULL | Correo electrónico (para login). |
+| contraseña | VARCHAR | NOT NULL | Contraseña encriptada. |
+| activo | BOOLEAN | NOT NULL | Indica si el usuario está activo. |
+| telefono | VARCHAR | NULL | Teléfono de contacto. |
+| **id_rol** | INT | **FK** (roles) | Referencia al rol del usuario. |
 
-Define en detalle la estructura, tipo de datos, restricciones y significado de cada campo en las tablas del modelo relacional.
+---
+**Tabla: `tipo_cancha`**
+* **Descripción:** Almacena los tipos de canchas disponibles (Ej: Fútbol 5, Pádel, Tenis).
+| Campo | Tipo | Restricciones | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_tipo** | INT | **PK** | Identificador único del tipo. |
+| descripcion | VARCHAR | NOT NULL | Nombre del tipo de cancha. |
 
-Acceso al documento [PDF](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf) del diccionario de datos.
+---
+**Tabla: `cancha`**
+* **Descripción:** Almacena la información de cada cancha física disponible.
+| Campo | Tipo | Restricciones | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_cancha** | INT | **PK** | Identificador único de la cancha. |
+| nro_cancha | VARCHAR | NOT NULL | Nombre o número de la cancha. |
+| ubicacion | VARCHAR | NULL | Descripción de la ubicación. |
+| precio_hora | DECIMAL | NOT NULL | Costo del alquiler por hora. |
+| **id_tipo** | INT | **FK** (tipo_cancha) | Referencia al tipo de cancha. |
 
-*A continuación, se incluye un extracto del diccionario de datos a modo de ejemplo (extraído del trabajo de campo de Ingeniería de Software I):*
+---
+**Tabla: `metodo_pago`**
+* **Descripción:** Almacena los métodos de pago aceptados (Ej: Efectivo, Tarjeta, Transferencia).
+| Campo | Tipo | RestricL | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_pago** | INT | **PK** | Identificador único del método. |
+| descripcion | VARCHAR | NOT NULL | Nombre del método de pago. |
 
-**Tabla: Jugador**
-* **Descripción:** Almacena los datos personales de los jugadores del sistema.
-* **Campos:**
-    * `ID_jugador` (PK)
-    * `nombre`
-    * `apellido`
-    * `email`
-    * `contraseña`
-    * `telefono`
+---
+**Tabla: `estado`**
+* **Descripción:** Almacena los posibles estados de una reserva (Ej: Pendiente, Confirmada, Cancelada, Pagada).
+| Campo | Tipo | RestricL | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_estado** | INT | **PK** | Identificador único del estado. |
+| estado | VARCHAR | NOT NULL | Nombre del estado de la reserva. |
+| **id_pago** | INT | **FK** (metodo_pago), **NULL** | Método de pago elegido (Opcional). |
 
-**Tabla: Reserva**
-* **Descripción:** Almacena la información de cada turno reservado.
-* **Campos:**
-    * `ID_reserva` (PK)
-    * `fecha`
-    * `hora`
-    * `ID_estado` (FK)
-    * `ID_jugador` (FK)
-    * `ID_cancha` (FK)
-    * `ID_canchero` (FK)
-
-**Tabla: Estado_Reserva**
-* **Descripción:** Guarda la información sobre el estado de la reserva y el pago.
-* **Campos:**
-    * `ID_estado` (PK)
-    * `estado` (ej: pendiente, cancelado, aprobado)
-    * `metodo_pago`
-    * `estado_pago` (ej: en espera, aprobado, rechazado)
+---
+**Tabla: `reserva`**
+* **Descripción:** Tabla principal que almacena todas las reservas de turnos.
+| Campo | Tipo | Restricciones | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_reserva** | INT | **PK** | Identificador único de la reserva. |
+| fecha | DATE | NOT NULL | Fecha del turno. |
+| hora | TIME | NOT NULL | Hora de inicio del turno. |
+| duracion | INT | NOT NULL | Duración en minutos. |
+| **id_usuario** | INT | **FK** (usuario) | Usuario que realiza la reserva. |
+| **id_estado** | INT | **FK** (estado) | Estado actual de la reserva. |
+| **id_cancha** | INT | **FK** (cancha) | Cancha que ha sido reservada. |
 
 ---
 
 ## CAPÍTULO V: CONCLUSIONES
 
-En este capítulo se interpreta el sentido de los resultados encontrados en el capítulo anterior y se evalúa el cumplimiento de los objetivos del Trabajo Práctico.
+En este capítulo se interpreta el sentido de los resultados encontrados y se evalúa el cumplimiento de los objetivos planteados.
 
-El desarrollo del proyecto ha permitido **alcanzar el objetivo general** de diseñar una base de datos robusta para automatizar el proceso de reserva de canchas. La información recogida durante la investigación, plasmada en los requisitos (Capítulo III), se ha traducido exitosamente en un modelo de datos (Capítulo IV) que responde a las necesidades detectadas.
+El desarrollo del proyecto ha permitido **alcanzar el objetivo general** de diseñar una base de datos centralizada y robusta para la gestión de turnos. El diseño final, presentado en el Capítulo IV, responde exitosamente a los requisitos relevados.
 
 Analizando los **objetivos específicos** (Sección 1.3.2):
 
-1.  **Reservar turnos:** El diseño lo permite mediante la relación entre las tablas `Jugador`, `Reserva` y `Cancha`.
-2.  **Gestión del administrador:** Se cumple al incluir la entidad `Canchero` y relacionarla con la `Reserva`, permitiendo la modificación, cancelación (actualizando el campo `estado` en `Estado_Reserva`) y visualización de turnos.
-3.  **Integrar métodos de pago:** La tabla `Estado_Reserva` satisface este requisito al incluir los campos `metodo_pago` y `estado_pago`.
-4.  **Información centralizada:** El modelo relacional propuesto logra centralizar toda la información operativa en una única base de datos, garantizando la disponibilidad en tiempo real y respondiendo a la fundamentación inicial.
+1.  **Reservar turnos:** Se cumple mediante la tabla `reserva`, que se vincula con un `id_usuario` (el jugador) y un `id_cancha`.
+2.  **Gestión del administrador:** Este es el punto clave del nuevo diseño. Al centralizar a todos en la tabla `usuario` y asignarles un `id_rol`, el sistema (la aplicación) puede implementar la lógica de permisos. Un "Canchero" (rol) puede modificar o cancelar reservas (`UPDATE` en `reserva`) que pertenecen a otro `id_usuario` (el jugador), cumpliendo el requisito (RF#4).
+3.  **Integrar métodos de pago:** Se logra mediante las tablas `metodo_pago` y `estado`. Una reserva puede tener un estado "Pagada" y una referencia al método con el que se abonó.
+4.  **Información centralizada:** El modelo relacional propuesto logra centralizar toda la información operativa, evitando redundancia y asegurando la integridad referencial.
 
-En conclusión, el diseño de la base de datos "TurnosYA" soluciona los problemas de coordinación manual, errores de disponibilidad y falta de control de pagos identificados en el caso de estudio.
+En conclusión, el diseño de la base de datos "TurnosYA" basado en una tabla `usuario` unificada con `roles` es una solución escalable y correcta que soluciona los problemas de gestión manual, permite el control administrativo y asegura la consistencia de los datos.
 
 ---
 
 ## CAPÍTULO VI: BIBLIOGRAFÍA
 
-Se citan los documentos consultados y efectivamente utilizados para la realización del trabajo, basándose en las referencias del proyecto de Ingeniería de Software I.
+Se citan los documentos consultados y utilizados para la realización del trabajo.
 
 | Referencias | Título |
 | :--- | :--- |
