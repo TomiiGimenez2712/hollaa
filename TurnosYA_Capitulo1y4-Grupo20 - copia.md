@@ -38,37 +38,37 @@ El presente proyecto tiene como objetivo el desarrollo de una base de datos para
 
 ### 1.2 Caso de estudio
 
-[cite_start]Hoy en día, hay una gran variedad de sistemas y aplicaciones dedicados a la gestión de reservas de canchas de pádel, fútbol y otros espacios deportivos[cite: 35]. [cite_start]Sin embargo, muchas de estas soluciones no se adaptan a las necesidades específicas de los usuarios locales o resultan demasiado complicadas para que pequeños centros deportivos las utilicen de forma práctica en su día a día[cite: 36]. [cite_start]Las soluciones más utilizadas dependen aún de interacciones manuales vía redes sociales o llamadas telefónicas, generando demoras, errores y dificultades para los administradores[cite: 37]. [cite_start]Nuestro proyecto busca mejorar esa experiencia con una solución simple, eficiente y accesible[cite: 38].
+Hoy en día, hay una gran variedad de sistemas y aplicaciones dedicados a la gestión de reservas de canchas de pádel, fútbol y otros espacios deportivos. Sin embargo, muchas de estas soluciones no se adaptan a las necesidades específicas de los usuarios locales o resultan demasiado complicadas para que pequeños centros deportivos las utilicen de forma práctica en su día a día. Las soluciones más utilizadas dependen aún de interacciones manuales vía redes sociales o llamadas telefónicas, generando demoras, errores y dificultades para los administradores. Nuestro proyecto busca mejorar esa experiencia con una solución simple, eficiente y accesible.
 
 ### 1.3 Objetivos y Fundamentación
 #### 1.3.1 Objetivo General
 
-[cite_start]Desarrollar una base de datos que permita automatizar el proceso de reserva de canchas deportivas y la gestión de pagos, optimizando el trabajo y mejorando la experiencia[cite: 41].
+Desarrollar una base de datos que permita automatizar el proceso de reserva de canchas deportivas y la gestión de pagos, optimizando el trabajo y mejorando la experiencia.
 
 #### 1.3.2 Objetivos específicos
-* [cite_start]Permitir a los jugadores reservar turnos según disponibilidad[cite: 43].
-* [cite_start]Facilitar al administrador la visualización, modificación y cancelación de turnos[cite: 44].
-* [cite_start]Integrar métodos de pago para una gestión financiera más eficaz[cite: 45].
-* [cite_start]Asegurar que toda la información esté centralizada y actualizada en tiempo real[cite: 46].
+* Permitir a los jugadores reservar turnos según disponibilidad.
+* Facilitar al administrador la visualización, modificación y cancelación de turnos.
+* Integrar métodos de pago para una gestión financiera más eficaz.
+* Asegurar que toda la información esté centralizada y actualizada en tiempo real.
 
 #### 1.3.3 Fundamentación
-[cite_start]La necesidad de automatizar el proceso de gestión de canchas se basa en las dificultades reportadas por usuarios, quienes manifestaron problemas en la coordinación manual de turnos, errores en la disponibilidad y falta de control sobre pagos[cite: 48]. [cite_start]El desarrollo de esta herramienta responde a esas demandas reales, mejorando la eficiencia operativa y la satisfacción de los usuarios[cite: 49].
+La necesidad de automatizar el proceso de gestión de canchas se basa en las dificultades reportadas por usuarios, quienes manifestaron problemas en la coordinación manual de turnos, errores en la disponibilidad y falta de control sobre pagos. El desarrollo de esta herramienta responde a esas demandas reales, mejorando la eficiencia operativa y la satisfacción de los usuarios.
 
 ---
 
 ## CAPÍTULO II: MARCO CONCEPTUAL REFERENCIAL
 
-[cite_start]Este capítulo sitúa el problema dentro de un conjunto de conocimientos que permiten orientar la búsqueda y ofrecen una conceptualización adecuada de los términos utilizados[cite: 760, 761].
+Este capítulo sitúa el problema dentro de un conjunto de conocimientos que permiten orientar la búsqueda y ofrecen una conceptualización adecuada de los términos utilizados.
 
 ### 2.1 Estado del Arte (Situación del Problema)
 
-[cite_start]Como se mencionó en el caso de estudio, existe una amplia gama de aplicaciones para la gestión de espacios deportivos[cite: 35]. Sin embargo, se detecta una brecha en soluciones que sean simultáneamente simples, accesibles para pequeños centros y que resuelvan los problemas centrales de la gestión manual. [cite_start]Los sistemas actuales a menudo fallan por depender de comunicación manual (redes sociales, teléfono), lo que introduce errores de disponibilidad, demoras en la confirmación y una gestión de pagos deficiente[cite: 37]. Este proyecto se enfoca en resolver estos puntos débiles mediante una base de datos centralizada.
+Como se mencionó en el caso de estudio, existe una amplia gama de aplicaciones para la gestión de espacios deportivos. Sin embargo, se detecta una brecha en soluciones que sean simultáneamente simples, accesibles para pequeños centros y que resuelvan los problemas centrales de la gestión manual. Los sistemas actuales a menudo fallan por depender de comunicación manual (redes sociales, teléfono), lo que introduce errores de disponibilidad, demoras en la confirmación y una gestión de pagos deficiente. Este proyecto se enfoca en resolver estos puntos débiles mediante una base de datos centralizada.
 
 ### 2.2 Conceptos Teóricos de Bases de Datos
 
-[cite_start]El desarrollo de este proyecto, como requisito de la asignatura, debe involucrar los conceptos teóricos de los motores de bases de datos aplicados a un caso práctico[cite: 720]. Los pilares conceptuales de este trabajo son:
+El desarrollo de este proyecto, como requisito de la asignatura, debe involucrar los conceptos teóricos de los motores de bases de datos aplicados a un caso práctico. Los pilares conceptuales de este trabajo son:
 
-* [cite_start]**Modelo Entidad-Relación (MER):** Es una herramienta para el modelado de datos que permite representar las entidades relevantes de un sistema de información (como `Jugador` [cite: 382][cite_start], `Cancha` [cite: 384][cite_start], `Reserva` [cite: 383]) y las relaciones entre ellas.
+* **Modelo Entidad-Relación (MER):** Es una herramienta para el modelado de datos que permite representar las entidades relevantes de un sistema de información (como `Jugador`, `Cancha`, `Reserva`) y las relaciones entre ellas.
 * **Modelo Relacional:** Es el modelo de base de datos en el que se basa el diseño. Consiste en representar los datos en tablas (relaciones) compuestas por filas (tuplas) y columnas (atributos). Este modelo garantiza la integridad y consistencia de los datos mediante el uso de claves primarias (PK) y claves foráneas (FK).
 * **Sistema Gestor de Base de Datos (SGBD):** Es el software que permite definir, construir y manipular la base de datos, proporcionando mecanismos de control de acceso, concurrencia y recuperación de fallos.
 * **SQL (Structured Query Language):** Es el lenguaje estándar utilizado para gestionar y consultar bases de datos relacionales.
@@ -77,72 +77,73 @@ El presente proyecto tiene como objetivo el desarrollo de una base de datos para
 
 ## CAPÍTULO III: METODOLOGÍA SEGUIDA
 
-[cite_start]En este capítulo se presenta el plan seguido y las acciones llevadas a cabo para realizar el trabajo, describiendo los pasos, actividades e instrumentos utilizados[cite: 767, 769, 772].
+En este capítulo se presenta el plan seguido y las acciones llevadas a cabo para realizar el trabajo, describiendo los pasos, actividades e instrumentos utilizados.
 
 ### 3.1 Fases del Proyecto
 
 El desarrollo del proyecto de base de datos se estructuró en las siguientes fases:
 
-1.  [cite_start]**Educción de Requisitos:** Se investigaron las necesidades y problemas de los usuarios clave[cite: 56].
-2.  [cite_start]**Especificación de Requisitos:** Se documentaron los requisitos funcionales y no funcionales que la base de datos debe soportar[cite: 71].
-3.  [cite_start]**Diseño Conceptual y Lógico:** Se creó el Diagrama Entidad-Relación [cite: 381] y el Diagrama Relacional.
-4.  [cite_start]**Implementación:** Se generó el Diccionario de Datos [cite: 421] como paso previo a la creación de los *scripts* SQL para la implementación física.
+1.  **Educción de Requisitos:** Se investigaron las necesidades y problemas de los usuarios clave.
+2.  **Especificación de Requisitos:** Se documentaron los requisitos funcionales y no funcionales que la base de datos debe soportar.
+3.  **Diseño Conceptual y Lógico:** Se creó el Diagrama Entidad-Relación y el Diagrama Relacional.
+4.  **Implementación:** Se generó el Diccionario de Datos como paso previo a la creación de los *scripts* SQL para la implementación física.
 
 ### 3.2 Método de Educción de Requisitos
 
-[cite_start]Para obtener los datos sobre las necesidades del sistema, se empleó la técnica de **entrevistas estructuradas**, dirigidas a los dos perfiles clave[cite: 56]:
+Para obtener los datos sobre las necesidades del sistema, se empleó la técnica de **entrevistas estructuradas**, dirigidas a los dos perfiles clave:
 
 * **Jugadores** (usuarios finales de las reservas).
 * **Cancheros** (administradores del sistema).
 
-[cite_start]Esta técnica permitió obtener información precisa sobre los problemas de la gestión manual[cite: 57]. [cite_start]Se incluyeron preguntas abiertas, cerradas y bipolares[cite: 58].
+Esta técnica permitió obtener información precisa sobre los problemas de la gestión manual. Se incluyeron preguntas abiertas, cerradas y bipolares.
 
-#### [cite_start]3.2.1 Preguntas a jugadores [cite: 59]
-* [cite_start]¿Con qué frecuencia reservas una cancha? [cite: 60]
-* [cite_start]¿Qué dificultades enfrentan al reservar? [cite: 61]
-* [cite_start]¿Te gustaría recibir confirmaciones automáticas? [cite: 63]
+#### 3.2.1 Preguntas a jugadores
+* ¿Con qué frecuencia reservas una cancha?
+* ¿Qué dificultades enfrentan al reservar?
+* ¿Te gustaría recibir confirmaciones automáticas?
 
-#### [cite_start]3.2.2 Preguntas a cancheros [cite: 64]
-* [cite_start]¿Cómo gestionan actualmente los turnos? [cite: 65]
-* [cite_start]¿Qué problemas surgen en la administración diaria? [cite: 66]
-* [cite_start]¿Necesitás ver reportes o estadísticas? [cite: 67]
-* [cite_start]¿Te interesaría agregar reservas manuales? [cite: 68]
+#### 3.2.2 Preguntas a cancheros
+* ¿Cómo gestionan actualmente los turnos?
+* ¿Qué problemas surgen en la administración diaria?
+* ¿Necesitás ver reportes o estadísticas?
+* ¿Te interesaría agregar reservas manuales?
 
 ### 3.3 Requisitos Funcionales (RF) Relevantes para la BD
 
-[cite_start]A partir de la educción, se definieron los requisitos funcionales [cite: 110] que la base de datos debe ser capaz de soportar. Los más relevantes para el diseño de datos son:
+A partir de la educción, se definieron los requisitos funcionales que la base de datos debe ser capaz de soportar. Los más relevantes para el diseño de datos son:
 
 | $N^{\circ}$ | Descripción |
 | :--- | :--- |
-| **RF#1** | [cite_start]El sistema deberá permitir a los jugadores visualizar un calendario de turnos[cite: 111]. |
-| **RF#2** | [cite_start]El sistema deberá permitir seleccionar cancha, fecha y horario entre los disponibles[cite: 111]. |
-| **RF#3** | [cite_start]El sistema deberá registrar reservas con confirmación automática[cite: 111]. |
-| **RF#4** | [cite_start]El sistema deberá permitir al canchero modificar, cancelar o agregar reservas manualmente[cite: 113]. |
-| **RF#5** | [cite_start]El sistema deberá mostrar el estado de pago de cada reserva[cite: 115]. |
-| **RF#6** | [cite_start]El sistema deberá permitir al jugador elegir el método de pago[cite: 117]. |
-| **RF#8** | [cite_start]El sistema deberá validar conflictos de horarios antes de confirmar reservas[cite: 121]. |
-| **RF#9** | [cite_start]El sistema deberá mostrar un resumen diario de reservas al canchero[cite: 123]. |
+| **RF#1** | El sistema deberá permitir a los jugadores visualizar un calendario de turnos. |
+| **RF#2** | El sistema deberá permitir seleccionar cancha, fecha y horario entre los disponibles. |
+| **RF#3** | El sistema deberá registrar reservas con confirmación automática. |
+| **RF#4** | El sistema deberá permitir al canchero modificar, cancelar o agregar reservas manualmente. |
+| **RF#5** | El sistema deberá mostrar el estado de pago de cada reserva. |
+| **RF#6** | El sistema deberá permitir al jugador elegir el método de pago. |
+| **RF#8** | El sistema deberá validar conflictos de horarios antes de confirmar reservas. |
+| **RF#9** | El sistema deberá mostrar un resumen diario de reservas al canchero. |
 
 ### 3.4 Herramientas Utilizadas
 
 Para la gestión y diseño del proyecto se utilizaron las siguientes herramientas:
 
-* [cite_start]**Herramientas de modelado de datos:** Se utilizaron herramientas gráficas para la creación del Diagrama Entidad-Relación [cite: 381] y el Diagrama Relacional.
-* [cite_start]**Trello:** Para la organización de tareas y seguimiento del proyecto[cite: 286].
-* [cite_start]**Procesadores de texto y hojas de cálculo:** Para la elaboración del Diccionario de Datos [cite: 421] y la documentación del informe.
+* **Herramientas de modelado de datos:** Se utilizaron herramientas gráficas para la creación del Diagrama Entidad-Relación y el Diagrama Relacional.
+* **Trello:** Para la organización de tareas y seguimiento del proyecto.
+* **Procesadores de texto y hojas de cálculo:** Para la elaboración del Diccionario de Datos y la documentación del informe.
 
 ---
 
 ## CAPÍTULO IV: DESARROLLO DEL TEMA / PRESENTACIÓN DE RESULTADOS
 
-[cite_start]Este capítulo presenta los hallazgos y el diseño propuesto para responder a los objetivos planteados[cite: 775, 778].
+Este capítulo presenta los hallazgos y el diseño propuesto para responder a los objetivos planteados.
 
 ### 4.1 Diagrama de Entidad-Relación (DER)
 
-[cite_start]El primer resultado del modelado es el DER[cite: 381], que identifica las entidades principales y sus relaciones.
+El primer resultado del modelado es el DER, que identifica las entidades principales y sus relaciones.
 
-![Diagrama de Entidad - Relación del proyecto TurnosYA](https://i.imgur.com/URL-DEL-DIAGRAMA-ER.png) 
-[cite_start]*(Nota: Reemplaza la URL de arriba con la imagen de tu DER, ya que no estaba en el .md original. Usé el DER del PDF como referencia [cite: 381])*
+[cite_start]*(Aquí deberías insertar la imagen de tu Diagrama Entidad-Relación, que está en el PDF de Ingeniería I, página 23 [cite: 461, 462, 463, 490, 493])*
+
+**
 
 ### 4.2 Diagrama Relacional
 
@@ -152,66 +153,66 @@ A partir del DER, se obtiene el modelo relacional, que representa la estructura 
 
 ### 4.3 Diccionario de Datos
 
-[cite_start]Define en detalle la estructura, tipo de datos, restricciones y significado de cada campo en las tablas del modelo relacional[cite: 421].
+Define en detalle la estructura, tipo de datos, restricciones y significado de cada campo en las tablas del modelo relacional.
 
 Acceso al documento [PDF](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf) del diccionario de datos.
 
-[cite_start]*A continuación, se incluye un extracto del diccionario de datos a modo de ejemplo (extraído del trabajo de campo de Ingeniería de Software I [cite: 421]):*
+*A continuación, se incluye un extracto del diccionario de datos a modo de ejemplo (extraído del trabajo de campo de Ingeniería de Software I):*
 
-[cite_start]**Tabla: Jugador** [cite: 427]
-* [cite_start]**Descripción:** Almacena los datos personales de los jugadores del sistema[cite: 429].
+**Tabla: Jugador**
+* **Descripción:** Almacena los datos personales de los jugadores del sistema.
 * **Campos:**
-    * [cite_start]`ID_jugador` (PK) [cite: 430, 444]
-    * [cite_start]`nombre` [cite: 430]
-    * [cite_start]`apellido` [cite: 430]
-    * [cite_start]`email` [cite: 430]
-    * [cite_start]`contraseña` [cite: 433]
-    * [cite_start]`telefono` [cite: 436]
+    * `ID_jugador` (PK)
+    * `nombre`
+    * `apellido`
+    * `email`
+    * `contraseña`
+    * `telefono`
 
-[cite_start]**Tabla: Reserva** [cite: 510]
-* [cite_start]**Descripción:** Almacena la información de cada turno reservado[cite: 512].
+**Tabla: Reserva**
+* **Descripción:** Almacena la información de cada turno reservado.
 * **Campos:**
-    * [cite_start]`ID_reserva` (PK) [cite: 517, 546]
-    * [cite_start]`fecha` [cite: 521]
-    * [cite_start]`hora` [cite: 524]
-    * [cite_start]`ID_estado` (FK) [cite: 527, 552]
-    * [cite_start]`ID_jugador` (FK) [cite: 531, 549]
-    * [cite_start]`ID_cancha` (FK) [cite: 534, 550]
-    * [cite_start]`ID_canchero` (FK) [cite: 538, 551]
+    * `ID_reserva` (PK)
+    * `fecha`
+    * `hora`
+    * `ID_estado` (FK)
+    * `ID_jugador` (FK)
+    * `ID_cancha` (FK)
+    * `ID_canchero` (FK)
 
-[cite_start]**Tabla: Estado_Reserva** [cite: 502]
-* [cite_start]**Descripción:** Guarda la información sobre el estado de la reserva y el pago[cite: 505].
+**Tabla: Estado_Reserva**
+* **Descripción:** Guarda la información sobre el estado de la reserva y el pago.
 * **Campos:**
-    * [cite_start]`ID_estado` (PK) [cite: 507]
-    * [cite_start]`estado` (ej: pendiente, cancelado, aprobado) [cite: 507]
-    * [cite_start]`metodo_pago` [cite: 507]
-    * [cite_start]`estado_pago` (ej: en espera, aprobado, rechazado) [cite: 507]
+    * `ID_estado` (PK)
+    * `estado` (ej: pendiente, cancelado, aprobado)
+    * `metodo_pago`
+    * `estado_pago` (ej: en espera, aprobado, rechazado)
 
 ---
 
 ## CAPÍTULO V: CONCLUSIONES
 
-[cite_start]En este capítulo se interpreta el sentido de los resultados encontrados en el capítulo anterior [cite: 786] [cite_start]y se evalúa el cumplimiento de los objetivos del Trabajo Práctico[cite: 787].
+En este capítulo se interpreta el sentido de los resultados encontrados en el capítulo anterior y se evalúa el cumplimiento de los objetivos del Trabajo Práctico.
 
-[cite_start]El desarrollo del proyecto ha permitido **alcanzar el objetivo general** de diseñar una base de datos robusta para automatizar el proceso de reserva de canchas[cite: 41]. [cite_start]La información recogida durante la investigación, plasmada en los requisitos (Capítulo III) [cite: 110-127], se ha traducido exitosamente en un modelo de datos (Capítulo IV) que responde a las necesidades detectadas.
+El desarrollo del proyecto ha permitido **alcanzar el objetivo general** de diseñar una base de datos robusta para automatizar el proceso de reserva de canchas. La información recogida durante la investigación, plasmada en los requisitos (Capítulo III), se ha traducido exitosamente en un modelo de datos (Capítulo IV) que responde a las necesidades detectadas.
 
 Analizando los **objetivos específicos** (Sección 1.3.2):
 
-1.  [cite_start]**Reservar turnos:** El diseño lo permite mediante la relación entre las tablas `Jugador`, `Reserva` y `Cancha`[cite: 43, 381].
-2.  [cite_start]**Gestión del administrador:** Se cumple al incluir la entidad `Canchero` [cite: 414] [cite_start]y relacionarla con la `Reserva` [cite: 381][cite_start], permitiendo la modificación, cancelación (actualizando el campo `estado` en `Estado_Reserva` [cite: 507][cite_start]) y visualización de turnos[cite: 44].
-3.  [cite_start]**Integrar métodos de pago:** La tabla `Estado_Reserva` satisface este requisito al incluir los campos `metodo_pago` y `estado_pago`[cite: 45, 507].
-4.  [cite_start]**Información centralizada:** El modelo relacional propuesto logra centralizar toda la información operativa en una única base de datos, garantizando la disponibilidad en tiempo real [cite: 46, 130] [cite_start]y respondiendo a la fundamentación inicial[cite: 48].
+1.  **Reservar turnos:** El diseño lo permite mediante la relación entre las tablas `Jugador`, `Reserva` y `Cancha`.
+2.  **Gestión del administrador:** Se cumple al incluir la entidad `Canchero` y relacionarla con la `Reserva`, permitiendo la modificación, cancelación (actualizando el campo `estado` en `Estado_Reserva`) y visualización de turnos.
+3.  **Integrar métodos de pago:** La tabla `Estado_Reserva` satisface este requisito al incluir los campos `metodo_pago` y `estado_pago`.
+4.  **Información centralizada:** El modelo relacional propuesto logra centralizar toda la información operativa en una única base de datos, garantizando la disponibilidad en tiempo real y respondiendo a la fundamentación inicial.
 
-[cite_start]En conclusión, el diseño de la base de datos "TurnosYA" soluciona los problemas de coordinación manual, errores de disponibilidad y falta de control de pagos identificados en el caso de estudio[cite: 48].
+En conclusión, el diseño de la base de datos "TurnosYA" soluciona los problemas de coordinación manual, errores de disponibilidad y falta de control de pagos identificados en el caso de estudio.
 
 ---
 
 ## CAPÍTULO VI: BIBLIOGRAFÍA
 
-[cite_start]Se citan los documentos consultados y efectivamente utilizados para la realización del trabajo [cite: 790][cite_start], basándose en las referencias del proyecto de Ingeniería de Software I[cite: 84].
+Se citan los documentos consultados y efectivamente utilizados para la realización del trabajo, basándose en las referencias del proyecto de Ingeniería de Software I.
 
 | Referencias | Título |
 | :--- | :--- |
-| IEEE | [cite_start]Standard IEEE 830-1998 [cite: 84] |
-| Licenciatura en Sistemas de Información | [cite_start]PFC (Proyecto Final de Carrera) [cite: 84] |
-| Ingeniería en Software I | [cite_start]Plantilla de clase [cite: 84] |
+| IEEE | Standard IEEE 830-1998 |
+| Licenciatura en Sistemas de Información | PFC (Proyecto Final de Carrera) |
+| Ingeniería en Software I | Plantilla de clase |
