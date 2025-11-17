@@ -143,7 +143,7 @@ El siguiente diagrama representa la estructura lógica de la base de datos "Turn
 
 Define en detalle la estructura, tipo de datos y restricciones de cada tabla en el modelo relacional final.
 
-Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf)
+Acceso al documento completo: [Diccionario_datos.md](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_datos.md)
 
 ---
 **Tabla: `roles`**
@@ -269,5 +269,6 @@ Se citan los documentos consultados y utilizados para la realización del trabaj
 | IEEE | Standard IEEE 830-1998 |
 | Licenciatura en Sistemas de Información | PFC (Proyecto Final de Carrera) |
 | Ingeniería en Software I | Plantilla de clase |
+
 
 
