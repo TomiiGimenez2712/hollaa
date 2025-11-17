@@ -52,12 +52,11 @@ Implementamos una arquitectura **Maestro-Esclavo**:
 
 Para nuestro proyecto, no todas las arquitecturas tienen sentido.
 
-#### 3.1 Modelo: Maestro-Esclavo (Recomendado)
+#### 3.1 Modelo: Maestro-Esclavo
 Como se detalló en el punto 2.1, este es el modelo ideal. "TurnosYA" tiene una separación clara de cargas de trabajo (lecturas vs. escrituras) que se adapta perfectamente a este modelo.
+*El modelo Maestro-Maestro no se recomienda*. Es muy complejo y genera problemas de conflicto
 
-*El modelo Maestro-Maestro no se recomienda*. Es muy complejo y genera problemas de conflicto (¿qué pasa si dos cancheros modifican la misma reserva en servidores distintos al mismo tiempo?) que no necesitamos resolver.
-
-#### 3.2 Método: Replicación Asíncrona (Recomendado)
+#### 3.2 Método: Replicación Asíncrona
 Aquí decidimos *cuándo* el servidor Maestro le confirma la reserva al jugador:
 
 * **Síncrona:** El jugador hace clic en "Reservar". El Maestro escribe el `INSERT`, lo envía a la Réplica, la Réplica confirma, y *solo entonces* el Maestro le dice al jugador "Reserva confirmada".
@@ -84,4 +83,5 @@ Para un entorno de producción de "TurnosYA" que necesite soportar múltiples ju
 
 * **Arquitectura:** Maestro-Esclavo (con una o más réplicas).
 * **Método:** Asíncrono (para máximo rendimiento en las reservas).
+
 * **Tipo:** Replicación Transaccional (para actualizaciones casi en tiempo real).
