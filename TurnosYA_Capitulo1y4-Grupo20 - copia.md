@@ -137,7 +137,7 @@ El siguiente diagrama representa la estructura lógica de la base de datos "Turn
 
 ![Diagrama Relacional Actualizado](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/turnosYA.png)
 
-*(Nota: Como charlamos, el script de SQL final incluye una mejora de integridad (la tabla `jugador` como subtipo) que soluciona el requisito de que solo jugadores puedan reservar. El Diccionario de Datos a continuación refleja esta versión final y más robusta).*
+*(Nota: Como charlamos, el script de SQL final incluye una mejora de integridad (la tabla `jugador` como subtipo) que soluciona el requisito de que solo jugadores puedan reservar. El **Diccionario de Datos (4.2)** a continuación refleja esta versión final y más robusta, que es la que se implementa en el script SQL).*
 
 ### 4.2 Diccionario de Datos
 
@@ -146,7 +146,7 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf)
 
 ---
-[cite_start]**Tabla: `roles`** [cite: 2]
+**Tabla: `roles`**
 
 * **Descripción:** Almacena los tipos de perfiles de usuario (Ej: Administrador, Canchero, Jugador).
 
@@ -156,7 +156,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | nombre_rol | VARCHAR(60) | NOT NULL, UNIQUE | Nombre descriptivo del rol. |
 
 ---
-[cite_start]**Tabla: `usuario`** [cite: 4, 26]
+**Tabla: `usuario`**
 
 * **Descripción:** Almacena la información de todos los usuarios (login y datos personales).
 
@@ -173,7 +173,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | **id_rol** | INT | **FK** (roles), NOT NULL | Referencia al rol del usuario. |
 
 ---
-[cite_start]**Tabla: `jugador`** [cite: 8]
+**Tabla: `jugador`**
 
 * **Descripción:** Tabla subtipo de `usuario`. Implementa la especialización y asegura que solo los 'Jugadores' puedan tener reservas.
 
@@ -182,7 +182,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | **id_usuario_jugador** | INT | **PK**, **FK** (usuario) | Es PK y FK a la vez. Referencia al `id_usuario`. |
 
 ---
-[cite_start]**Tabla: `metodo_pago`** [cite: 10, 27]
+**Tabla: `metodo_pago`**
 
 * **Descripción:** Tabla para definir los métodos de pago aceptados (Ej: Efectivo, Tarjeta).
 
@@ -192,7 +192,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | descripcion | VARCHAR(60) | NOT NULL, UNIQUE | Nombre del método de pago. |
 
 ---
-[cite_start]**Tabla: `estado`** [cite: 12, 28]
+**Tabla: `estado`**
 
 * **Descripción:** Define el estado de una reserva (Ej: Pendiente, Confirmada, Cancelada).
 
@@ -203,7 +203,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | **id_pago** | INT | **FK** (metodo_pago), NULL | Método de pago (NULL si no está pagado). |
 
 ---
-[cite_start]**Tabla: `tipo_cancha`** [cite: 15, 29]
+**Tabla: `tipo_cancha`**
 
 * **Descripción:** Define los tipos de canchas (Ej: Fútbol 5, Vóley, Pádel).
 
@@ -213,7 +213,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | descripcion | VARCHAR(80) | NOT NULL, UNIQUE | Nombre del tipo de cancha. |
 
 ---
-[cite_start]**Tabla: `cancha`** [cite: 17, 30]
+**Tabla: `cancha`**
 
 * **Descripción:** Registra las canchas físicas disponibles, su ubicación y precio.
 
@@ -226,7 +226,7 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | **id_tipo** | INT | **FK** (tipo_cancha), NOT NULL | Referencia al tipo de cancha. |
 
 ---
-[cite_start]**Tabla: `reserva`** [cite: 20, 31]
+**Tabla: `reserva`**
 
 * **Descripción:** Tabla principal que almacena cada reserva o turno realizado.
 
@@ -241,7 +241,6 @@ Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://gi
 | **id_cancha** | INT | **FK** (cancha), NOT NULL | Cancha que ha sido reservada. |
 
 *(Restricción Adicional: `UQ_reserva_momento` en `(fecha, hora, id_cancha)` para evitar duplicados).*
-
 ---
 
 ## CAPÍTULO V: CONCLUSIONES
@@ -270,4 +269,5 @@ Se citan los documentos consultados y utilizados para la realización del trabaj
 | IEEE | Standard IEEE 830-1998 |
 | Licenciatura en Sistemas de Información | PFC (Proyecto Final de Carrera) |
 | Ingeniería en Software I | Plantilla de clase |
+
 
