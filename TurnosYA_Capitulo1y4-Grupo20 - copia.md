@@ -133,100 +133,114 @@ Este capítulo presenta el diseño propuesto para la base de datos, respondiendo
 
 ### 4.1 Diagrama Relacional
 
-El siguiente diagrama representa la estructura lógica de la base de datos "TurnosYA", incluyendo todas las entidades, sus atributos y las relaciones entre ellas.
+El siguiente diagrama representa la estructura lógica de la base de datos "TurnosYA".
 
 ![Diagrama Relacional Actualizado](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/turnosYA.png)
 
+*(Nota: Como charlamos, el script de SQL final incluye una mejora de integridad (la tabla `jugador` como subtipo) que soluciona el requisito de que solo jugadores puedan reservar. El Diccionario de Datos a continuación refleja esta versión final y más robusta).*
+
 ### 4.2 Diccionario de Datos
 
-Define en detalle la estructura, tipo de datos y restricciones de cada tabla en el modelo relacional.
+Define en detalle la estructura, tipo de datos y restricciones de cada tabla en el modelo relacional final.
 
-Acceso al documento [PDF](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf) del diccionario de datos.
+Acceso al documento PDF completo: [Diccionario_de_Datos-TurnosYA.pdf](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf)
 
 ---
-**Tabla: `roles`**
+[cite_start]**Tabla: `roles`** [cite: 2]
 
 * **Descripción:** Almacena los tipos de perfiles de usuario (Ej: Administrador, Canchero, Jugador).
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_rol** | INT | **PK** | Identificador único del rol. |
-| nombre_rol | VARCHAR | NOT NULL | Nombre descriptivo del rol. |
+| **id_rol** | INT | **PK**, IDENTITY(1,1) | Identificador único del rol. |
+| nombre_rol | VARCHAR(60) | NOT NULL, UNIQUE | Nombre descriptivo del rol. |
 
 ---
-**Tabla: `usuario`**
+[cite_start]**Tabla: `usuario`** [cite: 4, 26]
 
-* **Descripción:** Almacena los datos de todas las personas que interactúan con el sistema.
+* **Descripción:** Almacena la información de todos los usuarios (login y datos personales).
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_usuario** | INT | **PK** | Identificador único del usuario. |
-| nombre | VARCHAR | NOT NULL | Nombre del usuario. |
-| apellido | VARCHAR | NOT NULL | Apellido del usuario. |
-| email | VARCHAR | UNIQUE, NOT NULL | Correo electrónico (para login). |
-| contraseña | VARCHAR | NOT NULL | Contraseña encriptada. |
-| activo | BOOLEAN | NOT NULL | Indica si el usuario está activo. |
-| telefono | VARCHAR | NULL | Teléfono de contacto. |
-| **id_rol** | INT | **FK** (roles) | Referencia al rol del usuario. |
+| **id_usuario** | INT | **PK**, IDENTITY(1,1) | Identificador único del usuario. |
+| nombre | VARCHAR(60) | NOT NULL | Nombre del usuario. |
+| apellido | VARCHAR(60) | NOT NULL | Apellido del usuario. |
+| email | VARCHAR(120) | NOT NULL, UNIQUE, CHECK | Correo electrónico (para login). |
+| contraseña | VARBINARY(256) | NULL | Contraseña encriptada (HASH). |
+| activo | INT | NOT NULL | 1 para activo, 0 para inactivo. |
+| telefono | VARCHAR(25) | NULL | Teléfono de contacto. |
+| dni | VARCHAR(20) | NOT NULL, UNIQUE | Documento Nacional de Identidad. |
+| **id_rol** | INT | **FK** (roles), NOT NULL | Referencia al rol del usuario. |
 
 ---
-**Tabla: `tipo_cancha`**
+[cite_start]**Tabla: `jugador`** [cite: 8]
 
-* **Descripción:** Almacena los tipos de canchas disponibles (Ej: Fútbol 5, Pádel, Tenis).
+* **Descripción:** Tabla subtipo de `usuario`. Implementa la especialización y asegura que solo los 'Jugadores' puedan tener reservas.
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_tipo** | INT | **PK** | Identificador único del tipo. |
-| descripcion | VARCHAR | NOT NULL | Nombre del tipo de cancha. |
+| **id_usuario_jugador** | INT | **PK**, **FK** (usuario) | Es PK y FK a la vez. Referencia al `id_usuario`. |
 
 ---
-**Tabla: `cancha`**
+[cite_start]**Tabla: `metodo_pago`** [cite: 10, 27]
 
-* **Descripción:** Almacena la información de cada cancha física disponible.
+* **Descripción:** Tabla para definir los métodos de pago aceptados (Ej: Efectivo, Tarjeta).
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_cancha** | INT | **PK** | Identificador único de la cancha. |
-| nro_cancha | VARCHAR | NOT NULL | Nombre o número de la cancha. |
-| ubicacion | VARCHAR | NULL | Descripción de la ubicación. |
-| precio_hora | DECIMAL | NOT NULL | Costo del alquiler por hora. |
-| **id_tipo** | INT | **FK** (tipo_cancha) | Referencia al tipo de cancha. |
+| **id_pago** | INT | **PK**, IDENTITY(1,1) | Identificador único del método. |
+| descripcion | VARCHAR(60) | NOT NULL, UNIQUE | Nombre del método de pago. |
 
 ---
-**Tabla: `metodo_pago`**
+[cite_start]**Tabla: `estado`** [cite: 12, 28]
 
-* **Descripción:** Almacena los métodos de pago aceptados (Ej: Efectivo, Tarjeta, Transferencia).
+* **Descripción:** Define el estado de una reserva (Ej: Pendiente, Confirmada, Cancelada).
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_pago** | INT | **PK** | Identificador único del método. |
-| descripcion | VARCHAR | NOT NULL | Nombre del método de pago. |
+| **id_estado** | INT | **PK**, IDENTITY(1,1) | Identificador único del estado. |
+| estado | VARCHAR(40) | NOT NULL | Nombre del estado (Ej: 'Pendiente'). |
+| **id_pago** | INT | **FK** (metodo_pago), NULL | Método de pago (NULL si no está pagado). |
 
 ---
-**Tabla: `estado`**
+[cite_start]**Tabla: `tipo_cancha`** [cite: 15, 29]
 
-* **Descripción:** Almacena los posibles estados de una reserva (Ej: Pendiente, Confirmada, Cancelada, Pagada).
+* **Descripción:** Define los tipos de canchas (Ej: Fútbol 5, Vóley, Pádel).
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_estado** | INT | **PK** | Identificador único del estado. |
-| estado | VARCHAR | NOT NULL | Nombre del estado de la reserva. |
-| **id_pago** | INT | **FK** (metodo_pago), **NULL** | Método de pago elegido (Opcional). |
+| **id_tipo** | INT | **PK**, IDENTITY(1,1) | Identificador único del tipo. |
+| descripcion | VARCHAR(80) | NOT NULL, UNIQUE | Nombre del tipo de cancha. |
 
 ---
-**Tabla: `reserva`**
+[cite_start]**Tabla: `cancha`** [cite: 17, 30]
 
-* **Descripción:** Tabla principal que almacena todas las reservas de turnos.
+* **Descripción:** Registra las canchas físicas disponibles, su ubicación y precio.
 
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
-| **id_reserva** | INT | **PK** | Identificador único de la reserva. |
+| **id_cancha** | INT | **PK**, IDENTITY(1,1) | Identificador único de la cancha. |
+| nro_cancha | INT | NOT NULL, UNIQUE, CHECK | Número de la cancha (debe ser > 0). |
+| ubicacion | VARCHAR(150) | NOT NULL | Descripción de la ubicación. |
+| precio_hora | DECIMAL(12,2) | NOT NULL, CHECK | Costo por hora (no puede ser < 0). |
+| **id_tipo** | INT | **FK** (tipo_cancha), NOT NULL | Referencia al tipo de cancha. |
+
+---
+[cite_start]**Tabla: `reserva`** [cite: 20, 31]
+
+* **Descripción:** Tabla principal que almacena cada reserva o turno realizado.
+
+| Campo | Tipo | Restricciones | Significado |
+| :--- | :--- | :--- | :--- |
+| **id_reserva** | INT | **PK**, IDENTITY(1,1) | Identificador único de la reserva. |
 | fecha | DATE | NOT NULL | Fecha del turno. |
-| hora | TIME | NOT NULL | Hora de inicio del turno. |
-| duracion | INT | NOT NULL | Duración en minutos. |
-| **id_usuario** | INT | **FK** (usuario) | Usuario que realiza la reserva. |
-| **id_estado** | INT | **FK** (estado) | Estado actual de la reserva. |
-| **id_cancha** | INT | **FK** (cancha) | Cancha que ha sido reservada. |
+| hora | TIME(0) | NOT NULL | Hora de inicio del turno. |
+| duracion | VARCHAR(50) | NOT NULL | Duración (Ej: '60 min'). |
+| **id_jugador** | INT | **FK** (jugador), NOT NULL | Referencia al jugador que reserva. |
+| **id_estado** | INT | **FK** (estado), NOT NULL | Estado actual de la reserva. |
+| **id_cancha** | INT | **FK** (cancha), NOT NULL | Cancha que ha sido reservada. |
+
+*(Restricción Adicional: `UQ_reserva_momento` en `(fecha, hora, id_cancha)` para evitar duplicados).*
 
 ---
 
@@ -256,3 +270,4 @@ Se citan los documentos consultados y utilizados para la realización del trabaj
 | IEEE | Standard IEEE 830-1998 |
 | Licenciatura en Sistemas de Información | PFC (Proyecto Final de Carrera) |
 | Ingeniería en Software I | Plantilla de clase |
+
