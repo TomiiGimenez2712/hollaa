@@ -146,7 +146,9 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 
 ---
 **Tabla: `roles`**
+
 * **Descripción:** Almacena los tipos de perfiles de usuario (Ej: Administrador, Canchero, Jugador).
+
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_rol** | INT | **PK** | Identificador único del rol. |
@@ -154,7 +156,9 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 
 ---
 **Tabla: `usuario`**
+
 * **Descripción:** Almacena los datos de todas las personas que interactúan con el sistema.
+
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_usuario** | INT | **PK** | Identificador único del usuario. |
@@ -168,7 +172,9 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 
 ---
 **Tabla: `tipo_cancha`**
+
 * **Descripción:** Almacena los tipos de canchas disponibles (Ej: Fútbol 5, Pádel, Tenis).
+
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_tipo** | INT | **PK** | Identificador único del tipo. |
@@ -176,7 +182,9 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 
 ---
 **Tabla: `cancha`**
+
 * **Descripción:** Almacena la información de cada cancha física disponible.
+
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_cancha** | INT | **PK** | Identificador único de la cancha. |
@@ -187,16 +195,20 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 
 ---
 **Tabla: `metodo_pago`**
+
 * **Descripción:** Almacena los métodos de pago aceptados (Ej: Efectivo, Tarjeta, Transferencia).
-| Campo | Tipo | RestricL | Significado |
+
+| Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_pago** | INT | **PK** | Identificador único del método. |
 | descripcion | VARCHAR | NOT NULL | Nombre del método de pago. |
 
 ---
 **Tabla: `estado`**
+
 * **Descripción:** Almacena los posibles estados de una reserva (Ej: Pendiente, Confirmada, Cancelada, Pagada).
-| Campo | Tipo | RestricL | Significado |
+
+| Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_estado** | INT | **PK** | Identificador único del estado. |
 | estado | VARCHAR | NOT NULL | Nombre del estado de la reserva. |
@@ -204,7 +216,9 @@ Define en detalle la estructura, tipo de datos y restricciones de cada tabla en 
 
 ---
 **Tabla: `reserva`**
+
 * **Descripción:** Tabla principal que almacena todas las reservas de turnos.
+
 | Campo | Tipo | Restricciones | Significado |
 | :--- | :--- | :--- | :--- |
 | **id_reserva** | INT | **PK** | Identificador único de la reserva. |
