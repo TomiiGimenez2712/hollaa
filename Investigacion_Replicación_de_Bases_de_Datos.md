@@ -17,16 +17,16 @@ Basado en los objetivos estratégicos, la replicación no es solo un backup; es 
 
 Este es el beneficio más importante para "TurnosYA". Debemos analizar nuestro tipo de "carga de trabajo" (Workload):
 
-* **Muchas Lecturas (Reads):** Tendremos docenas de jugadores navegando el calendario, viendo canchas disponibles y ejecutando la función `fn_VerificarDisponibilidad` constantemente. Estas son consultas `SELECT`.
-* **Pocas Escrituras (Writes):** En comparación, el número de reservas reales (transacciones que ejecutan `sp_registrar_reserva_completa`) será mucho menor.
+* **Muchas Lecturas (Reads):** Tendremos docenas de jugadores navegando el calendario, viendo canchas disponibles. Estas son consultas `SELECT`.
+* **Pocas Escrituras (Writes):** En comparación, el número de reservas reales transacciones que ejecutan serán mucho menores.
 
 **El Problema:** Si 100 jugadores consultan el calendario (`SELECT`) al mismo tiempo en la misma base de datos donde 1 jugador intenta reservar (`INSERT`), las lecturas pueden bloquear o ralentizar la escritura. El sistema se sentirá lento.
 
 **La Solución (Balanceo de Carga):**
 Implementamos una arquitectura **Maestro-Esclavo**:
 
-1.  **Servidor Maestro (Primario):** Maneja **todas las escrituras**. Cuando alguien reserva, el `INSERT` de `sp_registrar_reserva_completa` se ejecuta aquí.
-2.  **Servidor Réplica (Esclavo):** Maneja **todas las lecturas**. Cuando los jugadores cargan el calendario, la aplicación apunta sus `SELECT` y la ejecución de `fn_VerificarDisponibilidad` a este servidor.
+1.  **Servidor Maestro (Primario):** Maneja **todas las escrituras**. Cuando alguien reserva, el `INSERT` se ejecuta aquí.
+2.  **Servidor Réplica (Esclavo):** Maneja **todas las lecturas**. Cuando los jugadores cargan el calendario, la aplicación apunta un `SELECT` que se ejecuta en este servidor.
 
 **Impacto:** El servidor Maestro está libre de consultas pesadas y puede procesar nuevas reservas (`INSERT`) de forma instantánea. El servidor Réplica maneja la carga pesada de las consultas del calendario, asegurando que la web se sienta rápida.
 
@@ -74,14 +74,14 @@ Dados los tipos que existen en SQL Server:
 
 1.  **Snapshot (Instantáneas):** No sirve. Toma una "foto" de la base de datos. Si se hace una vez al día, los jugadores no verían las reservas nuevas hasta el día siguiente.
 2.  **Merge (Mezcla):** No sirve. Es para sistemas desconectados, como apps móviles que sincronizan datos una vez al día. "TurnosYA" está siempre online.
-3.  **Transaccional (Recomendado):** Es la solución perfecta. Captura las transacciones (como el `INSERT` en `reserva` o el `UPDATE` en `sp_reserva_cancelar`) del log y las aplica en las réplicas casi en tiempo real. Es el estándar de la industria para alta disponibilidad y balanceo de carga.
+3.  **Transaccional (Recomendado):** Es la solución perfecta. Captura las transacciones (como el `INSERT` o el `UPDATE`) del log y las aplica en las réplicas casi en tiempo real. Es el estándar de la industria para alta disponibilidad y balanceo de carga.
 
 ### 5. Conclusión
 
-Para un entorno de producción de "TurnosYA" que necesite soportar múltiples jugadores y administradores, la arquitectura recomendada es:
+Para un entorno de producción de "TurnosYA" que necesita soportar múltiples jugadores y administradores, la arquitectura elegida es:
 
 * **Arquitectura:** Maestro-Esclavo (con una o más réplicas).
 * **Método:** Asíncrono (para máximo rendimiento en las reservas).
-
 * **Tipo:** Replicación Transaccional (para actualizaciones casi en tiempo real).
+
 
