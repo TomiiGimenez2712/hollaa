@@ -61,7 +61,7 @@ Este capítulo sitúa el problema dentro de un conjunto de conocimientos que per
 
 ### 2.1 Estado del Arte (Situación del Problema)
 
-Como se mencionó en el caso de estudio, existe una amplia gama de aplicaciones para la gestión de espacios deportivos. Sin embargo, se detecta una brecha en soluciones que sean simultáneamente simples, accesibles para pequeños centros y que resuelvan los problemas centrales de la gestión manual. Los sistemas actuales a menudo fallan por depender de comunicación manual (redes sociales, teléfono), lo que introduce errores de disponibilidad, demoras en la confirmación y una gestión de pagos deficiente. Este proyecto se enfoca en resolver estos puntos débiles mediante una base de datos centralizada.
+Como se mencionó en el caso de estudio, existe una amplia gama de aplicaciones para la gestión de espacios deportivos. Sin embargo, se detecta una brecha en soluciones que sean simultáneamente simples, accesibles para pequeños centros y que resuelvan los problemas centrales de la gestión manual. Los sistemas actuales a menudo fallan por depender de comunicación manual (redes sociales, teléfono), lo que introduce errores de disponibilidad, demoras en la confirmación y una gestión de pagos deficiente. Este proyecto se enfoca en resolver estos puntos débKbles mediante una base de datos centralizada.
 
 ### 2.2 Conceptos Teóricos de Bases de Datos
 
@@ -135,14 +135,13 @@ Este capítulo presenta el diseño propuesto para la base de datos, respondiendo
 
 El siguiente diagrama representa la estructura lógica de la base de datos "TurnosYA", incluyendo todas las entidades, sus atributos y las relaciones entre ellas.
 
-*(Aquí debes insertar la imagen que me pasaste: `WhatsApp Image 2025-11-16 at 21.41.33.jpeg`)*
-
-![Diagrama Relacional Actualizado](https://i.imgur.com/8Qn7mR7.png) 
-*(Nota: Puse una imagen de marcador de posición. ¡Reemplaza el enlace de arriba con la ruta a tu imagen!)*
+![Diagrama Relacional Actualizado](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/turnosYA.png)
 
 ### 4.2 Diccionario de Datos
 
 Define en detalle la estructura, tipo de datos y restricciones de cada tabla en el modelo relacional.
+
+Acceso al documento [PDF](https://github.com/lautarogimenezx/TurnosYA/blob/main/docs/Diccionario_de_Datos-TurnosYA.pdf) del diccionario de datos.
 
 ---
 **Tabla: `roles`**
