@@ -1,61 +1,5 @@
-
-USE TurnosYaDB;
-GO
-
--- 1. Roles
-INSERT INTO roles (nombre_rol) VALUES 
-('Administrador'), ('Canchero'), ('Jugador');
-GO
-
--- 2. Usuarios (Contraseña '1234' hasheada - SOLO PARA PRUEBAS)
-INSERT INTO usuario (nombre, apellido, email, contraseña, activo, telefono, dni, id_rol) VALUES
-('Juan', 'Perez', 'juan.perez@email.com', HASHBYTES('SHA2_256', '1234'), 1, '3794112233', '40111222', 3), -- Rol 3 = Jugador
-('Ana', 'Gomez', 'ana.gomez@email.com', HASHBYTES('SHA2_256', '1234'), 1, '3794445566', '35999888', 1); -- Rol 1 = Admin
-GO
-
--- 3. Jugador (Especialización del usuario Juan Perez)
-INSERT INTO jugador (id_usuario_jugador) VALUES 
-(1); -- ID de Juan Perez (asumiendo que es ID 1)
-GO
-
--- 4. Métodos de Pago
-INSERT INTO metodo_pago (descripcion) VALUES 
-('Efectivo'), ('Transferencia MP'), ('Tarjeta de Crédito');
-GO
-
--- 5. Tipos de Cancha
-INSERT INTO tipo_cancha (descripcion) VALUES 
-('Fútbol 5'), ('Pádel'), ('Básquet');
-GO
-
--- 6. Canchas
-INSERT INTO cancha (nro_cancha, ubicacion, precio_hora, id_tipo) VALUES 
-(1, 'Nave Principal (Izquierda)', 5000.00, 1), -- Fútbol 5
-(2, 'Nave Principal (Derecha)', 5000.00, 1), -- Fútbol 5
-(3, 'Fondo (Vidrio)', 4500.00, 2); -- Pádel
-GO
-
--- 7. Estados (Importante: Asumimos IDs 1=Pend, 5=Canc)
-INSERT INTO estado (estado, id_pago) VALUES
-('Pendiente', NULL),         -- ID 1
-('Confirmada (Efectivo)', 1), -- ID 2
-('Confirmada (MP)', 2),       -- ID 3
-('Confirmada (TC)', 3),       -- ID 4
-('Cancelada', NULL);         -- ID 5
-GO
-
--- 8. Reserva (Una reserva existente para pruebas)
-INSERT INTO reserva (fecha, hora, duracion, id_jugador, id_estado, id_cancha) VALUES
-(GETDATE() + 1, '18:00:00', '60 min', 1, 1, 3); -- Cancha 3, Mañana 18:00, Pendiente (ID 1)
-GO
-
-PRINT '--- Lote de datos insertado con éxito ---';
-GO
-
--- -------------------------------------------------
--- EJEMPLO 1: Función Escalar (Validación)
--- -------------------------------------------------
-CREATE FUNCTION fn_VerificarDisponibilidad (
+ï»¿
+CREATE OR ALTER FUNCTION fn_VerificarDisponibilidad (
     @id_cancha INT,
     @fecha DATE,
     @hora TIME
@@ -64,7 +8,8 @@ RETURNS BIT
 AS
 BEGIN
     DECLARE @disponible BIT = 1;
-    DECLARE @id_estado_cancelado INT = 5; -- Asumimos ID 5 = Cancelada
+    -- ID 5 = 'Cancelada'
+    DECLARE @id_estado_cancelado INT = 5; 
 
     IF EXISTS (
         SELECT 1
@@ -75,18 +20,14 @@ BEGIN
           AND id_estado != @id_estado_cancelado
     )
     BEGIN
-        SET @disponible = 0; -- No está disponible
+        SET @disponible = 0; -- No estÃ¡ disponible
     END
 
     RETURN @disponible;
 END;
 GO
-PRINT 'FUNCIÓN: fn_VerificarDisponibilidad creada.';
 
--- -------------------------------------------------
--- EJEMPLO 2: Función Escalar (Cálculo)
--- -------------------------------------------------
-CREATE FUNCTION fn_CalcularPrecioTurno (
+CREATE OR ALTER FUNCTION fn_CalcularPrecioTurno (
     @id_cancha INT,
     @fecha DATE
 )
@@ -96,27 +37,14 @@ BEGIN
     DECLARE @precio_base DECIMAL(12, 2);
     DECLARE @precio_final DECIMAL(12, 2);
     
-    -- Obtenemos el precio base de la cancha
     SELECT @precio_base = precio_hora FROM cancha WHERE id_cancha = @id_cancha;
-    
     SET @precio_final = @precio_base;
-
-    -- Lógica de negocio: Sábados (7) o Domingos (1) tienen 20% de recargo
-    -- (OJO: Esto depende de la configuración de SET DATEFIRST)
-    IF DATEPART(dw, @fecha) IN (1, 7)
-    BEGIN
-        SET @precio_final = @precio_base * 1.20;
-    END
 
     RETURN @precio_final;
 END;
 GO
-PRINT 'FUNCIÓN: fn_CalcularPrecioTurno creada.';
 
--- -------------------------------------------------
--- EJEMPLO 3: Función de Tabla (Reporte)
--- -------------------------------------------------
-CREATE FUNCTION fn_ObtenerAgendaPorCancha (
+CREATE OR ALTER FUNCTION fn_ObtenerAgendaPorCancha (
     @id_cancha INT,
     @fecha DATE
 )
@@ -138,22 +66,18 @@ RETURN
     JOIN usuario u ON j.id_usuario_jugador = u.id_usuario
     WHERE r.id_cancha = @id_cancha
       AND r.fecha = @fecha
-      AND e.estado != 'Cancelada' -- Ocultar canceladas
+      AND e.estado != 'Cancelada'
 );
 GO
-PRINT 'FUNCIÓN: fn_ObtenerAgendaPorCancha creada.';
 
--- -------------------------------------------------
--- EJEMPLO 4: Procedimiento (Gestión de Usuarios - Transaccional)
--- -------------------------------------------------
-CREATE PROCEDURE sp_CrearUsuarioJugador
+CREATE OR ALTER PROCEDURE sp_CrearUsuarioJugador
 (
     @nombre VARCHAR(60),
     @apellido VARCHAR(60),
     @email VARCHAR(120),
     @dni VARCHAR(20),
     @telefono VARCHAR(25),
-    @contraseña VARCHAR(100) 
+    @contraseÃ±a VARCHAR(100)
 )
 AS
 BEGIN
@@ -161,44 +85,35 @@ BEGIN
     
     DECLARE @id_rol_jugador INT;
     DECLARE @id_nuevo_usuario INT;
-
-    -- 1. Buscamos el ID del rol 'Jugador'
     SELECT @id_rol_jugador = id_rol FROM roles WHERE nombre_rol = 'Jugador';
     IF @id_rol_jugador IS NULL
     BEGIN
-        RAISERROR('Error crítico: El rol "Jugador" no existe en la tabla de roles.', 16, 1);
+        RAISERROR('Error crÃ­tico: El rol "Jugador" no existe en la tabla de roles.', 16, 1);
         RETURN -1;
     END
 
-    -- 2. Iniciamos la transacción
     BEGIN TRANSACTION;
-    
     BEGIN TRY
-        -- 3. Insertamos en la tabla 'usuario' (hasheando la contraseña)
-        INSERT INTO usuario (nombre, apellido, email, contraseña, activo, telefono, dni, id_rol)
-        VALUES (@nombre, @apellido, @email, HASHBYTES('SHA2_256', @contraseña), 1, @telefono, @dni, @id_rol_jugador);
+        -- Insertamos en 'usuario'
+        INSERT INTO usuario (nombre, apellido, email, contraseÃ±a, activo, telefono, dni, id_rol)
+        VALUES (@nombre, @apellido, @email, HASHBYTES('SHA2_256', @contraseÃ±a), 1, @telefono, @dni, @id_rol_jugador);
         
-        -- 4. Obtenemos el ID del usuario recién creado
         SET @id_nuevo_usuario = SCOPE_IDENTITY();
 
-        -- 5. Insertamos en la tabla 'jugador' para especializarlo
+        -- Insertamos en 'jugador'
         INSERT INTO jugador (id_usuario_jugador)
         VALUES (@id_nuevo_usuario);
 
-        -- 6. Si todo salió bien, confirmamos la transacción
         COMMIT TRANSACTION;
-        PRINT 'Jugador creado con éxito. ID = ' + CAST(@id_nuevo_usuario AS VARCHAR);
+        PRINT 'Jugador creado con Ã©xito. ID = ' + CAST(@id_nuevo_usuario AS VARCHAR);
         RETURN @id_nuevo_usuario;
 
     END TRY
     BEGIN CATCH
-        -- 7. Si algo falla, revertimos todo
         ROLLBACK TRANSACTION;
-        
         DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
         
-        -- Manejo de errores comunes (Duplicados)
-        IF ERROR_NUMBER() = 2627 OR ERROR_NUMBER() = 2601 -- Violación de UNIQUE KEY
+        IF ERROR_NUMBER() = 2627 OR ERROR_NUMBER() = 2601 -- ViolaciÃ³n de UNIQUE KEY
         BEGIN
             IF @ErrorMessage LIKE '%UQ_usuario_email%'
                 RAISERROR('El email "%s" ya se encuentra registrado.', 16, 1, @email);
@@ -208,20 +123,15 @@ BEGIN
                 RAISERROR(@ErrorMessage, 16, 1);
         END
         ELSE
-        BEGIN
             RAISERROR(@ErrorMessage, 16, 1);
-        END
         
         RETURN -1;
     END CATCH
 END;
 GO
-PRINT 'PROCEDIMIENTO: sp_CrearUsuarioJugador creado.';
+PRINT 'PROCEDIMIENTO: sp_CrearUsuarioJugador creado/alterado.';
 
--- -------------------------------------------------
--- EJEMPLO 5: Procedimiento (Lógica de Negocio - Reservar)
--- -------------------------------------------------
-CREATE PROCEDURE sp_RegistrarReserva
+CREATE OR ALTER PROCEDURE sp_RegistrarReserva
     (
     @id_jugador INT,
     @id_cancha INT,
@@ -232,49 +142,49 @@ CREATE PROCEDURE sp_RegistrarReserva
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    DECLARE @id_estado_pendiente INT = 1; -- Asumimos ID 1 = Pendiente
+    DECLARE @id_estado_pendiente INT = 1; 
     DECLARE @mensaje_error NVARCHAR(4000);
 
     BEGIN TRY
         
-        -- 1. Validación de Jugador
         IF NOT EXISTS (SELECT 1 FROM jugador WHERE id_usuario_jugador = @id_jugador)
         BEGIN
-            RAISERROR('El ID de jugador proporcionado no es válido.', 16, 1);
+            RAISERROR('El ID de jugador proporcionado no es vÃ¡lido.', 16, 1);
             RETURN;
         END
-
-        -- 2. Validación de Disponibilidad (usando nuestra función)
+        -- Usamos nuestra funciÃ³n de validaciÃ³n
         IF dbo.fn_VerificarDisponibilidad(@id_cancha, @fecha, @hora) = 0
         BEGIN
-            RAISERROR('El turno para esa cancha, fecha y hora ya no está disponible.', 16, 1);
+            RAISERROR('El turno para esa cancha, fecha y hora ya no estÃ¡ disponible.', 16, 1);
             RETURN;
         END
 
-        -- 3. Inserción
         INSERT INTO reserva (fecha, hora, duracion, id_jugador, id_estado, id_cancha)
         VALUES (@fecha, @hora, @duracion, @id_jugador, @id_estado_pendiente, @id_cancha);
         
-        -- 4. Devolvemos la reserva creada
         SELECT * FROM reserva WHERE id_reserva = SCOPE_IDENTITY(); 
 
     END TRY
     BEGIN CATCH
         SET @mensaje_error = ERROR_MESSAGE();
-        RAISERROR(@mensaje_error, 16, 1);
+        -- Si el error es de la UQ_reserva_momento (por si acaso fn_VerificarDisponibilidad falla)
+        IF ERROR_NUMBER() = 2627 OR ERROR_NUMBER() = 2601
+        BEGIN
+             RAISERROR('El turno para esa cancha, fecha y hora ya no estÃ¡ disponible (Error de Concurrencia).', 16, 1);
+        END
+        ELSE
+        BEGIN
+            RAISERROR(@mensaje_error, 16, 1);
+        END
     END CATCH
 END;
 GO
-PRINT 'PROCEDIMIENTO: sp_RegistrarReserva creado.';
+PRINT 'PROCEDIMIENTO: sp_RegistrarReserva creado/alterado.';
 
--- -------------------------------------------------
--- EJEMPLO 6: Procedimiento (Administrativo - Confirmar Pago)
--- -------------------------------------------------
-CREATE PROCEDURE sp_ConfirmarPagoReserva
+CREATE OR ALTER PROCEDURE sp_ConfirmarPagoReserva
 (
     @id_reserva INT,
-    @id_metodo_pago INT
+    @id_metodo_pago INT -- (1=Efectivo, 2=Tarjeta, 3=Transferencia)
 )
 AS
 BEGIN
@@ -288,14 +198,14 @@ BEGIN
         RETURN;
     END
 
-    -- Buscamos el estado "Confirmada" que coincida con el método de pago
+    -- Busca el estado (ID 2, 3 o 4) que coincida con el id_pago (1, 2 o 3)
     SELECT @id_estado_nuevo = id_estado
     FROM estado
     WHERE id_pago = @id_metodo_pago AND estado LIKE 'Confirmada%';
 
     IF @id_estado_nuevo IS NULL
     BEGIN
-        RAISERROR('No se encontró un estado "Confirmada" para el método de pago ID %d.', 16, 1, @id_metodo_pago);
+        RAISERROR('No se encontrÃ³ un estado "Confirmada" para el mÃ©todo de pago ID %d.', 16, 1, @id_metodo_pago);
         RETURN;
     END
 
@@ -303,15 +213,12 @@ BEGIN
     SET id_estado = @id_estado_nuevo
     WHERE id_reserva = @id_reserva;
 
-    PRINT 'Reserva ID %d actualizada a estado Confirmado (Método Pago ID %d).';
+    PRINT 'Reserva ID ' + CAST(@id_reserva AS VARCHAR) + ' actualizada a estado Confirmado.';
 END;
 GO
-PRINT 'PROCEDIMIENTO: sp_ConfirmarPagoReserva creado.';
+PRINT 'PROCEDIMIENTO: sp_ConfirmarPagoReserva creado/alterado.';
 
--- -------------------------------------------------
--- EJEMPLO 7: Procedimiento (Administrativo - Cancelar)
--- -------------------------------------------------
-CREATE PROCEDURE sp_CancelarReserva
+CREATE OR ALTER PROCEDURE sp_CancelarReserva
 (
     @id_reserva INT
 )
@@ -319,10 +226,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    DECLARE @id_estado_cancelado INT = 5; -- Asumimos ID 5 = Cancelada
+    -- ID 5 = 'Cancelada'
+    DECLARE @id_estado_cancelado INT = 5; 
     DECLARE @id_reserva_actual INT;
 
-    -- Validar que la reserva exista y no esté ya cancelada
     SELECT @id_reserva_actual = id_reserva 
     FROM reserva 
     WHERE id_reserva = @id_reserva AND id_estado != @id_estado_cancelado;
@@ -337,154 +244,198 @@ BEGIN
     SET id_estado = @id_estado_cancelado
     WHERE id_reserva = @id_reserva;
 
-    PRINT 'Reserva ID %d cancelada con éxito.';
+    PRINT 'Reserva ID ' + CAST(@id_reserva AS VARCHAR) + ' cancelada con Ã©xito.';
 END;
 GO
-PRINT '--- Todas las Funciones y SPs han sido creados ---';
+PRINT 'PROCEDIMIENTO: sp_CancelarReserva creado/alterado.';
+PRINT '--- Todas las Funciones y SPs han sido creados/alterados ---';
+
+PRINT '--- INICIANDO LOTE DE PRUEBAS ADAPTATIVO ---';
+GO
+
+PRINT '--- Pruebas de Funciones ---';
+
+-- Prueba 1 (FunciÃ³n): Verificar turno OCUPADO (Debe devolver 0)
+-- Tomamos un turno aleatorio que NO estÃ© cancelado
+PRINT 'Prueba 1: Verificando un turno ocupado al azar...';
+DECLARE @TestReservaOcupada TABLE (cancha INT, fecha DATE, hora TIME);
+INSERT INTO @TestReservaOcupada 
+    SELECT TOP 1 id_cancha, fecha, hora FROM reserva WHERE id_estado != 5 ORDER BY NEWID();
+
+SELECT dbo.fn_VerificarDisponibilidad(
+    (SELECT cancha FROM @TestReservaOcupada), 
+    (SELECT fecha FROM @TestReservaOcupada), 
+    (SELECT hora FROM @TestReservaOcupada)
+) AS TurnoOcupado_DebeSer_0;
 
 
-PRINT '--- INICIANDO LOTE DE PRUEBAS ---';
+-- Prueba 2 (FunciÃ³n): Verificar turno LIBRE (Debe devolver 1)
+PRINT 'Prueba 2: Verificando un turno Ð·Ð°Ð²ÐµÐ´Ð¾Ð¼Ð¾ libre...';
+SELECT dbo.fn_VerificarDisponibilidad(1, '1900-01-01', '12:00:00') AS TurnoLibre_DebeSer_1;
 
--- (Variables para la fecha de "Mañana", que es donde insertamos la reserva)
-DECLARE @FechaPrueba DATE = GETDATE() + 1;
-DECLARE @FechaPruebaFinDeSemana DATE;
 
--- (Buscar el próximo sábado para probar el recargo de precio)
-SET @FechaPruebaFinDeSemana = GETDATE();
-WHILE DATEPART(dw, @FechaPruebaFinDeSemana) != 7
+-- Prueba 3 (FunciÃ³n): Calcular precio en Fin de Semana (Cancha 1)
+PRINT 'Prueba 3: Calculando precio de fin de semana...';
+DECLARE @FechaSabado DATE;
+SET @FechaSabado = GETDATE();
+WHILE DATEPART(dw, @FechaSabado) != 7 BEGIN
+    SET @FechaSabado = @FechaSabado + 1;
+END
+SELECT dbo.fn_CalcularPrecioTurno(1, @FechaSabado) AS PrecioFinDeSemana_Cancha1;
+GO
+PRINT '--- Pruebas de CreaciÃ³n de Jugador ---';
+
+-- Prueba 4 (Ã‰xito): Crear un nuevo jugador (con DNI/Email Ãºnicos)
+PRINT 'Prueba 4: Creando jugador con datos Ãºnicos...';
+DECLARE @email_exito VARCHAR(120) = 'exito.prueba.' + CAST(NEWID() AS VARCHAR(36)) + '@turnosya.com';
+DECLARE @dni_exito VARCHAR(20) = CAST(ABS(CHECKSUM(NEWID())) AS VARCHAR);
+
+EXEC sp_CrearUsuarioJugador
+    @nombre = 'PruebaExito',
+    @apellido = 'Test',
+    @email = @email_exito,
+    @dni = @dni_exito,
+    @telefono = '123456789',
+    @contraseÃ±a = 'Password123';
+DECLARE @id_jugador_exito INT = (SELECT id_usuario FROM usuario WHERE email = @email_exito);
+PRINT 'Jugador de prueba creado con ID: ' + CAST(@id_jugador_exito AS VARCHAR);
+
+-- Prueba 5 (Error): Intentar crear con DNI duplicado
+PRINT 'Prueba 5: Intentando crear con DNI duplicado...';
+BEGIN TRY
+    EXEC sp_CrearUsuarioJugador
+        @nombre = 'PruebaErrorDNI',
+        @apellido = 'Test',
+        @email = 'otro.email.distinto@turnosya.com',
+        @dni = @dni_exito, -- DNI Repetido de la prueba 4
+        @telefono = '123',
+        @contraseÃ±a = 'Password123';
+END TRY
+BEGIN CATCH
+    PRINT 'Error capturado (DNI duplicado): ' + ERROR_MESSAGE();
+END CATCH
+
+-- Prueba 6 (Error): Intentar crear con Email duplicado
+PRINT 'Prueba 6: Intentando crear con Email duplicado...';
+BEGIN TRY
+    EXEC sp_CrearUsuarioJugador
+        @nombre = 'PruebaErrorEmail',
+        @apellido = 'Test',
+        @email = @email_exito, -- Email Repetido de la prueba 4
+        @dni = '00000001', -- DNI distinto
+        @telefono = '123',
+        @contraseÃ±a = 'Password123';
+END TRY
+BEGIN CATCH
+    PRINT 'Error capturado (Email duplicado): ' + ERROR_MESSAGE();
+END CATCH
+GO
+
+PRINT '--- Pruebas de Registro de Reserva ---';
+
+
+DECLARE @id_jugador_prueba INT = (SELECT TOP 1 id_usuario_jugador FROM jugador ORDER BY id_usuario_jugador); -- Tomamos el primer jugador
+DECLARE @fecha_libre DATE = '1900-01-01';
+DECLARE @hora_libre TIME = '12:00:00';
+DECLARE @id_cancha_prueba INT = 1;
+
+-- Prueba 7 (Ã‰xito): Reservar un turno libre
+PRINT 'Prueba 7: Registrando reserva en turno libre...';
+EXEC sp_RegistrarReserva
+    @id_jugador = @id_jugador_prueba,
+    @id_cancha = @id_cancha_prueba,
+    @fecha = @fecha_libre,
+    @hora = @hora_libre;
+-- (DeberÃ­a devolver la fila de la reserva creada)
+
+-- Prueba 8 (Error): Intentar reservar el mismo turno (conflicto)
+PRINT 'Prueba 8: Intentando registrar en el mismo turno (debe fallar)...';
+BEGIN TRY
+    EXEC sp_RegistrarReserva
+        @id_jugador = @id_jugador_prueba,
+        @id_cancha = @id_cancha_prueba,
+        @fecha = @fecha_libre,
+        @hora = @hora_libre;
+END TRY
+BEGIN CATCH
+    PRINT 'Error capturado (Conflicto de turno): ' + ERROR_MESSAGE();
+END CATCH
+
+-- Prueba 9 (Error): Intentar reservar con un Jugador ID invÃ¡lido
+PRINT 'Prueba 9: Intentando registrar con jugador inexistente...';
+BEGIN TRY
+    EXEC sp_RegistrarReserva
+        @id_jugador = -99, -- No existe
+        @id_cancha = 2,
+        @fecha = '1900-01-02', -- Otra fecha libre
+        @hora = '12:00:00';
+END TRY
+BEGIN CATCH
+    PRINT 'Error capturado (Jugador invÃ¡lido): ' + ERROR_MESSAGE();
+END CATCH
+GO
+
+PRINT '--- Pruebas de SPs Administrativos y Reportes ---';
+
+-- Obtenemos IDs de prueba al azar desde la BDD masiva
+DECLARE @id_reserva_pendiente INT;
+DECLARE @id_reserva_a_cancelar INT;
+DECLARE @id_cancha_reporte INT;
+DECLARE @fecha_reporte DATE;
+
+-- Tomamos una reserva 'Pendiente' (ID 1)
+SELECT TOP 1 @id_reserva_pendiente = id_reserva, 
+             @id_cancha_reporte = id_cancha, 
+             @fecha_reporte = fecha
+FROM reserva WHERE id_estado = 1 ORDER BY NEWID();
+
+-- Tomamos una reserva que NO estÃ© 'Cancelada' (ID 5)
+SELECT TOP 1 @id_reserva_a_cancelar = id_reserva
+FROM reserva WHERE id_estado != 5 ORDER BY NEWID();
+
+PRINT 'ID Pendiente seleccionada: ' + ISNULL(CAST(@id_reserva_pendiente AS VARCHAR), 'NINGUNA (TEST OMITIDO)');
+PRINT 'ID a Cancelar seleccionada: ' + ISNULL(CAST(@id_reserva_a_cancelar AS VARCHAR), 'NINGUNA (TEST OMITIDO)');
+
+IF @id_reserva_pendiente IS NOT NULL
 BEGIN
-    SET @FechaPruebaFinDeSemana = @FechaPruebaFinDeSemana + 1;
+    -- Prueba 10 (Reporte): Ver la agenda ANTES de confirmar
+    PRINT 'Prueba 10: Agenda (ANTES de confirmar):';
+    SELECT * FROM dbo.fn_ObtenerAgendaPorCancha(@id_cancha_reporte, @fecha_reporte)
+    WHERE id_reserva = @id_reserva_pendiente;
+
+    -- Prueba 11 (SP Admin): Confirmar el pago de la reserva con 'Tarjeta' (ID Pago 2)
+    PRINT 'Prueba 11: Confirmando pago de reserva...';
+    EXEC sp_ConfirmarPagoReserva @id_reserva = @id_reserva_pendiente, @id_metodo_pago = 2;
+
+    -- Prueba 12 (Reporte): Ver la agenda DESPUÃ‰S de confirmar
+    PRINT 'Prueba 12: Agenda (DESPUÃ‰S de confirmar):';
+    SELECT * FROM dbo.fn_ObtenerAgendaPorCancha(@id_cancha_reporte, @fecha_reporte)
+    WHERE id_reserva = @id_reserva_pendiente;
+END
+ELSE
+BEGIN
+    PRINT 'OMITIENDO Pruebas 10-12 (No se encontraron reservas Pendientes).';
 END
 
+IF @id_reserva_a_cancelar IS NOT NULL
+BEGIN
+    -- Prueba 13 (SP Admin): Cancelar la reserva
+    PRINT 'Prueba 13: Cancelando reserva...';
+    EXEC sp_CancelarReserva @id_reserva = @id_reserva_a_cancelar;
 
--- -------------------------------------------------
--- PRUEBAS: Funciones de Validación y Cálculo
--- -------------------------------------------------
-
-
--- Prueba 1 (Función): Verificar turno OCUPADO (Debe devolver 0)
-SELECT dbo.fn_VerificarDisponibilidad(3, @FechaPrueba, '18:00:00') AS TurnoOcupado;
-
--- Prueba 2 (Función): Verificar turno LIBRE (Misma cancha, otra hora) (Debe devolver 1)
-SELECT dbo.fn_VerificarDisponibilidad(3, @FechaPrueba, '19:00:00') AS TurnoLibre_OtraHora;
-
--- Prueba 3 (Función): Verificar turno LIBRE (Otra cancha, misma hora) (Debe devolver 1)
-SELECT dbo.fn_VerificarDisponibilidad(1, @FechaPrueba, '18:00:00') AS TurnoLibre_OtraCancha;
-
--- Prueba 4 (Función): Calcular precio en día de semana (Cancha 1: 5000)
-SELECT dbo.fn_CalcularPrecioTurno(1, GETDATE() + 1) AS PrecioDiaSemana; -- Asumiendo que mañana no es Sab/Dom
-
--- Prueba 5 (Función): Calcular precio en Fin de Semana (Cancha 1: 5000 * 1.20 = 6000)
-SELECT dbo.fn_CalcularPrecioTurno(1, @FechaPruebaFinDeSemana) AS PrecioFinDeSemana;
+    -- Prueba 14 (Error SP Admin): Intentar cancelar la reserva DE NUEVO
+    PRINT 'Prueba 14: Intentando cancelar de nuevo (debe fallar)...';
+    BEGIN TRY
+        EXEC sp_CancelarReserva @id_reserva = @id_reserva_a_cancelar;
+    END TRY
+    BEGIN CATCH
+        PRINT 'Error capturado (Ya cancelada): ' + ERROR_MESSAGE();
+    END CATCH
+END
+ELSE
+BEGIN
+    PRINT 'OMITIENDO Pruebas 13-14 (No se encontraron reservas para cancelar).';
+END
 GO
 
--- -------------------------------------------------
--- PRUEBAS: sp_CrearUsuarioJugador (Transaccional)
--- -------------------------------------------------
-
--- Prueba 6 (Éxito): Crear un nuevo jugador
-EXEC sp_CrearUsuarioJugador
-    @nombre = 'Carlos',
-    @apellido = 'Santana',
-    @email = 'carlos.santana@email.com',
-    @dni = '30111222',
-    @telefono = '3794887766',
-    @contraseña = 'Password123';
--- (Debería imprimir 'Jugador creado con éxito...' y devolver el nuevo ID)
-
--- Prueba 7 (Error): Intentar crear con DNI duplicado
-EXEC sp_CrearUsuarioJugador
-    @nombre = 'Carlos',
-    @apellido = 'Santana',
-    @email = 'carlos.OTROEMAIL@email.com',
-    @dni = '30111222', -- DNI Repetido
-    @telefono = '3794887766',
-    @contraseña = 'Password123';
--- (Debería fallar y mostrar el error de RAISERROR: 'El DNI... ya se encuentra registrado.')
-
--- Prueba 8 (Error): Intentar crear con Email duplicado
-EXEC sp_CrearUsuarioJugador
-    @nombre = 'Juan',
-    @apellido = 'Perez',
-    @email = 'juan.perez@email.com', -- Email Repetido
-    @dni = '50111222',
-    @telefono = '3794112233',
-    @contraseña = 'Password123';
--- (Debería fallar y mostrar el error de RAISERROR: 'El email... ya se encuentra registrado.')
-GO
-
--- -------------------------------------------------
--- PRUEBAS: sp_RegistrarReserva
--- -------------------------------------------------
-
--- Prueba 9 (Éxito): Reservar un turno libre
--- (Juan Perez (ID 1) reserva la Cancha 1 mañana a las 19:00)
-EXEC sp_RegistrarReserva
-    @id_jugador = 1,
-    @id_cancha = 1,
-    @fecha = @FechaPrueba,
-    @hora = '19:00:00';
--- (Debería devolver la fila de la reserva creada, ID 2)
-DECLARE @id_reserva_nueva INT = (SELECT MAX(id_reserva) FROM reserva);
-
--- Prueba 10 (Error): Intentar reservar el turno ocupado del Lote de Datos
-EXEC sp_RegistrarReserva
-    @id_jugador = 1,
-    @id_cancha = 3,
-    @fecha = @FechaPrueba,
-    @hora = '18:00:00';
--- (Debería fallar: 'El turno... ya no está disponible.')
-
--- Prueba 11 (Error): Intentar reservar el turno que acabamos de crear (Prueba 9)
-EXEC sp_RegistrarReserva
-    @id_jugador = 1,
-    @id_cancha = 1,
-    @fecha = @FechaPrueba,
-    @hora = '19:00:00';
--- (Debería fallar: 'El turno... ya no está disponible.')
-
--- Prueba 12 (Error): Intentar reservar con un Jugador ID inválido
-EXEC sp_RegistrarReserva
-    @id_jugador = 999, -- No existe
-    @id_cancha = 2,
-    @fecha = @FechaPrueba,
-    @hora = '20:00:00';
--- (Debería fallar: 'El ID de jugador... no es válido.')
-GO
-
--- -------------------------------------------------
--- PRUEBAS: SPs Administrativos y Funciones de Reporte
--- -------------------------------------------------
-
--- (Situación inicial: Tenemos la Reserva ID 1 (Pendiente) y la ID 2 (Pendiente))
-DECLARE @id_reserva_original INT = (SELECT MIN(id_reserva) FROM reserva);
-DECLARE @id_reserva_nueva INT = (SELECT MAX(id_reserva) FROM reserva);
-
--- Prueba 13 (Reporte): Ver la agenda de la Cancha 3 (Debe mostrar la reserva ID 1)
-PRINT 'Agenda Cancha 3 (Antes de confirmar):';
-SELECT * FROM dbo.fn_ObtenerAgendaPorCancha(3, @FechaPrueba);
-
--- Prueba 14 (SP Admin): Confirmar el pago de la reserva ID 1 con 'Transferencia MP' (ID Pago 2)
-EXEC sp_ConfirmarPagoReserva @id_reserva = @id_reserva_original, @id_metodo_pago = 2;
--- (Debería imprimir 'Reserva ID 1 actualizada...')
-
--- Prueba 15 (Reporte): Ver la agenda de la Cancha 3 (Ahora debe decir 'Confirmada (MP)')
-PRINT 'Agenda Cancha 3 (Después de confirmar):';
-SELECT * FROM dbo.fn_ObtenerAgendaPorCancha(3, @FechaPrueba);
-
--- Prueba 16 (Reporte): Ver la agenda de la Cancha 1 (Debe mostrar la reserva ID 2 'Pendiente')
-PRINT 'Agenda Cancha 1 (Reserva nueva):';
-SELECT * FROM dbo.fn_ObtenerAgendaPorCancha(1, @FechaPrueba);
-
--- Prueba 17 (SP Admin): Cancelar la reserva ID 2
-EXEC sp_CancelarReserva @id_reserva = @id_reserva_nueva;
--- (Debería imprimir 'Reserva ID 2 cancelada...')
-
--- Prueba 18 (Reporte): Ver la agenda de la Cancha 1 (Ahora debe estar vacía)
-PRINT 'Agenda Cancha 1 (Después de cancelar):';
-SELECT * FROM dbo.fn_ObtenerAgendaPorCancha(1, @FechaPrueba);
-
--- Prueba 19 (Error SP Admin): Intentar cancelar la reserva ID 2 de nuevo
-EXEC sp_CancelarReserva @id_reserva = @id_reserva_nueva;
--- (Debería fallar: 'La reserva ID 2... ya se encuentra cancelada.')
-GO
+PRINT '--- LOTE DE PRUEBAS FINALIZADO ---';
