@@ -54,7 +54,6 @@ Para nuestro proyecto, no todas las arquitecturas tienen sentido.
 
 #### 3.1 Modelo: Maestro-Esclavo
 Como se detalló en el punto 2.1, este es el modelo ideal. "TurnosYA" tiene una separación clara de cargas de trabajo (lecturas vs. escrituras) que se adapta perfectamente a este modelo.
-*El modelo Maestro-Maestro no se recomienda*. Es muy complejo y genera problemas de conflicto
 
 #### 3.2 Método: Replicación Asíncrona
 Aquí decidimos *cuándo* el servidor Maestro le confirma la reserva al jugador:
@@ -65,7 +64,7 @@ Aquí decidimos *cuándo* el servidor Maestro le confirma la reserva al jugador:
     * *Ventaja:* **Alto rendimiento**. El jugador tiene una confirmación instantánea.
     * *Riesgo (mínimo):* Existe un "replication lag". Si el Maestro falla en el milisegundo exacto *antes* de enviar el dato a la Réplica, esa reserva podría perderse.
 
-**Decisión para "TurnosYA":** La **Replicación Asíncrona** es la ganadora. Para un sistema de turnos, la velocidad y la experiencia del usuario al reservar (alto rendimiento) son más importantes que la garantía de consistencia total e inmediata que ofrece la síncrona.
+**Decisión para "TurnosYA":** Consideramos que la **Replicación Asíncrona** es la indicada  para un sistema de turnos como este, la velocidad y la experiencia del usuario al reservar (alto rendimiento) son más importantes que la garantía de consistencia total e inmediata que ofrece la síncrona.
 
 ---
 
@@ -85,3 +84,4 @@ Para un entorno de producción de "TurnosYA" que necesite soportar múltiples ju
 * **Método:** Asíncrono (para máximo rendimiento en las reservas).
 
 * **Tipo:** Replicación Transaccional (para actualizaciones casi en tiempo real).
+
