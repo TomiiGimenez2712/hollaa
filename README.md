@@ -1,8 +1,8 @@
-# Turnos YA - Reserva de Canchas 🎾⚽
+# Turnos YA - Reserva de Canchas 
 
 Una aplicación web moderna, rápida y responsiva diseñada para facilitar la gestión y reserva de canchas deportivas. Construida con un enfoque minimalista y optimizada tanto para administradores como para clientes.
 
-## 🚀 Características Principales
+##  Características Principales
 
 - **Interfaz Intuitiva y Moderna**: Diseño responsivo y amigable para dispositivos móviles usando TailwindCSS.
 - **Reserva de Turnos**: Selección de fechas, canchas y horarios disponibles con formularios simples.
@@ -10,11 +10,11 @@ Una aplicación web moderna, rápida y responsiva diseñada para facilitar la ge
 - **Arquitectura Multicapa**: Código refactorizado y organizado en capas claras para maximizar la mantenibilidad (Presentación, Lógica, Datos).
 - **Gestión de Base de Datos y Autenticación**: Impulsado por Supabase.
 
-## 🏗️ Arquitectura del Proyecto
+##  Arquitectura del Proyecto
 
 El proyecto está diseñado bajo un estricto patrón de **Arquitectura Multicapa (N-Tier)**, dividiendo las responsabilidades en capas claras para favorecer la escalabilidad, separación de intereses (SoC) y la fácil mantenibilidad.
 
-### 🌳 Mapa de Directorios (Distribución de Archivos)
+###  Mapa de Directorios (Distribución de Archivos)
 
 ```text
 Turnos_YA/
@@ -41,7 +41,7 @@ Turnos_YA/
 2. Estos eventos son delegados inmediatamente a los **Controladores** y **Servicios** correspondientes dentro de la `capaDeLogica`, garantizando que la UI sea tonta (no decida nada).
 3. La lógica examina el negocio (por ejemplo, usando `validarSolapamiento`), y si está todo en orden, se comunica bidireccionalmente con la `capaDeDatos` donde se orquestan las consultas asíncronas de Supabase.
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript (Módulos ES6)
 - **Estilos**: [TailwindCSS](https://tailwindcss.com/) (Vía CDN)
@@ -50,7 +50,7 @@ Turnos_YA/
 
 
 
-## ⚙️ Instalación y Uso Local
+##  Instalación y Uso Local
 
 Dado que la aplicación funciona predominantemente en el lado del cliente (Client-Side con BaaS), su ejecución es extremadamente sencilla:
 
@@ -59,7 +59,7 @@ Dado que la aplicación funciona predominantemente en el lado del cliente (Clien
 3. **Punto de Entrada**: Navegar al archivo `Capa_de_Presentacion/index.html` para la vista de clientes.
 4. **Configuración de Entorno**: Asegurate de revisar el archivo en `Capa_de_Datos/supabase/supabaseClient.js` para confirmar que las credenciales de Supabase estén correctamente conectadas si es que planeas usar tu propia instancia.
 
-## 📱 Vistas Principales
+##  Vistas Principales
 
 - `/Capa_de_Presentacion/index.html` -> Página principal para reserva de clientes.
 - `/Capa_de_Presentacion/login.html` -> Ingreso seguro para el personal/administradores.
