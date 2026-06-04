@@ -8,8 +8,9 @@ Fecha de ejecucion:
 
 | CP | Objetivo | Datos de entrada | Resultado esperado | obtenido |
 |---|---|---|---|---|
-| 1 | Administrador olvida asignar un precio a la nueva cancha | Nombre: Cancha 5, Deporte: Fútbol, Apertura: 10:00, Cierre: 22:00, Precio: (campo en blanco). Click en Guardar | El sistema rechaza la operación validando el campo y mostrando el mensaje: El precio debe ser un número válido. | |
-| 2 | Administrador configura mal el horario (cierre ilógico) | Nombre: Padel 2, Deporte: Padel, Apertura: 18:00, Cierre: 12:00, Precio: 3000. Click en Guardar | El sistema detecta el error temporal (cierre anterior a apertura sin ser de madrugada). Muestra: Revisar horarios: Si cruza la medianoche, el cierre debe ser de madrugada (antes de las 07:00 AM). | |
+| 1 | Administrador da de alta una nueva cancha exitosamente | Nombre: Cancha Principal, Deporte: Tenis, Apertura: 08:00, Cierre: 23:00, Precio: 8000. Click en Guardar | El sistema valida los datos. Inserta la nueva cancha de Tenis en la base de datos y la muestra en la lista pública de inmediato. | |
+| 2 | Administrador olvida asignar un precio a la nueva cancha | Nombre: Cancha 5, Deporte: Fútbol, Apertura: 10:00, Cierre: 22:00, Precio: (campo en blanco). Click en Guardar | El sistema rechaza la operación validando el campo y mostrando el mensaje: El precio debe ser un número válido. | |
+| 3 | Administrador configura mal el horario (cierre ilógico) | Nombre: Padel 2, Deporte: Padel, Apertura: 18:00, Cierre: 12:00, Precio: 3000. Click en Guardar | El sistema detecta el error temporal (cierre anterior a apertura sin ser de madrugada). Muestra: Revisar horarios: Si cruza la medianoche, el cierre debe ser de madrugada (antes de las 07:00 AM). | |
 
 
 Id-nombre del sistema: Sistema Turnos YA
@@ -22,9 +23,10 @@ Fecha de ejecucion:
 
 | CP | Objetivo | Datos de entrada | Resultado esperado | obtenido |
 |---|---|---|---|---|
-| 1 | Cliente recurrente reserva rápidamente solo con su email | Selección: Jueves 20:00. Email: juan_frecuente@mail.com. Nombre: (vacío). Teléfono: (vacío). Click en Confirmar | El sistema busca en BD, reconoce que Juan ya existe, omite la validación de nombre/teléfono y aprueba la reserva vinculándola a su ID histórico. | |
-| 2 | Cliente nuevo intenta reservar pero omite su celular | Selección: Jueves 19:00. Email: nuevo_cliente@mail.com. Nombre: Carlos. Teléfono: (vacío). Click en Confirmar | El sistema verifica que el email no existe en BD. Al ser nuevo, detiene el proceso y alerta: Como es tu primera vez, necesitamos tu Nombre y Teléfono. | |
-| 3 | Alta concurrencia: Dos clientes clickean el mismo turno a la vez | Selección: Viernes 21:00 (Hora pico). El Cliente A confirma la reserva medio segundo antes que el Cliente B. | El sistema inserta el Detalle del Cliente A. Cuando el Cliente B llega a la BD, la validación atómica falla y le muestra: Este horario acaba de ser ocupado por otra persona. Recarga la agenda e intenta con otro. | |
+| 1 | Cliente nuevo llena el formulario completo y reserva | Selección: Viernes 19:00. Email: minombre@mail.com. Nombre: Martín. Teléfono: 123456. Click en Confirmar | El sistema inserta al jugador en BD, crea la reserva, asigna el estado Pendiente y actualiza el calendario ocultando ese horario. | |
+| 2 | Cliente recurrente reserva rápidamente solo con su email | Selección: Jueves 20:00. Email: juan_frecuente@mail.com. Nombre: (vacío). Teléfono: (vacío). Click en Confirmar | El sistema busca en BD, reconoce que Juan ya existe, omite la validación de nombre/teléfono y aprueba la reserva vinculándola a su ID histórico. | |
+| 3 | Cliente nuevo intenta reservar pero omite su celular | Selección: Jueves 19:00. Email: nuevo_cliente@mail.com. Nombre: Carlos. Teléfono: (vacío). Click en Confirmar | El sistema verifica que el email no existe en BD. Al ser nuevo, detiene el proceso y alerta: Como es tu primera vez, necesitamos tu Nombre y Teléfono. | |
+| 4 | Alta concurrencia: Dos clientes clickean el mismo turno a la vez | Selección: Viernes 21:00 (Hora pico). El Cliente A confirma la reserva medio segundo antes que el Cliente B. | El sistema inserta el Detalle del Cliente A. Cuando el Cliente B llega a la BD, la validación atómica falla y le muestra: Este horario acaba de ser ocupado por otra persona. Recarga la agenda e intenta con otro. | |
 
 
 Id-nombre del sistema: Sistema Turnos YA
